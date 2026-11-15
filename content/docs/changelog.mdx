@@ -1,0 +1,61 @@
+---
+title: Changelog
+description: Release notes for every version of the Engine User Settings plugin.
+---
+
+## v1.1.4 — Unreal Engine 5.8 <UEVersion tone="since">Latest</UEVersion>
+
+_Released 2026-11-07_
+
+### Added
+
+- Support for **Unreal Engine 5.8**.
+- [Set Preferred Feature Level](/docs/Nodes/shader-model#set-preferred-feature-level) can now select **Performance Mode** (ES 3.1) when the preferred RHI is DirectX 12.
+
+### Changed
+
+- Saved rendering settings are restored with `IConsoleVariable::Set` (priority **SetByCode**) instead of building console commands from `GameUserSettings.ini`. The player's choice still wins over project and scalability settings, the console can still override it, and unknown console variables are ignored.
+- Saving a value with [Set Game User Settings Ini Value](/docs/Nodes/utilities#set-game-user-settings-ini-value) writes the file to disk but keeps it in the config cache, so `UGameUserSettings` keeps working with it.
+- The plugin descriptor now targets **Win64** only (Win32 was removed).
+- Author, documentation and support links now point to the `nathancmiguel` GitHub account.
+
+### Fixed
+
+- [Get Preferred Feature Level](/docs/Nodes/shader-model#get-preferred-feature-level) read the wrong `GameUserSettings.ini` key (`D3D12TargetedShaderFormats`) and returned **Invalid**. It now reads `PreferredFeatureLevel`, the key written by Set Preferred Feature Level.
+- [Get Current Feature Level](/docs/Nodes/shader-model#get-current-feature-level) could crash when there was no play world (main menu, editor outside PIE, map travel). It now falls back to the maximum supported feature level.
+- [Is Shader Compiling](/docs/Nodes/utilities#is-shader-compiling) checks that the shader compiling manager exists and is compiled out of non-editor builds.
+- Restoring settings no longer depends on `GEngine` being initialized when the module starts up.
+
+## v1.1.3 — Niagara fix
+
+_Released 2025-03-07 · Unreal Engine 5.5 · also published for 5.6 (2025-06-03)_
+
+- Fixed a Niagara dependency error when packaging.
+- Added support for Unreal Engine 5.6.
+
+## v1.1.2 — Unreal Engine 5.5
+
+_Released 2024-11-13_
+
+- Added support for Unreal Engine 5.5.
+- Added [Set / Get Allow MegaLights](/docs/Nodes/render#set-allow-megalights).
+
+## v1.1.1 / v1.1.0 — Shader compiler
+
+_Released 2024-08-17 – 2024-08-21 · Unreal Engine 5.4_
+
+- Added the in-game [shader compiler](/docs/Nodes/shader-compiler) (`ABP_ShadersCompiler`).
+- Fixed packaging errors and a missing function.
+
+## v1.0 — Unreal Engine 5.1 – 5.4
+
+_2023-05 – 2024-07_
+
+- Fixed saved values not being loaded and the module loading phase (2024-07).
+- Unreal Engine 5.4 fixes and updated system ini paths (2024-04).
+- Added [mobile anti-aliasing](/docs/Nodes/render#set-mobile-antialiasing-method) support (2024-02).
+- Fixed the shadow method getter (2023-11).
+- Fixed switching to Shader Model 6 and several other bugs (2023-09).
+- Added post-process override options (2023-06).
+- Upgraded to Unreal Engine 5.1 and added Performance Mode (2023-05).
+- Added the option to enable and disable Nanite in game (2022-12).

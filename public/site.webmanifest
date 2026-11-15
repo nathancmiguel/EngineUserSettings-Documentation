@@ -1,0 +1,12 @@
+{
+  "name": "Engine User Settings",
+  "short_name": "EUS Docs",
+  "description": "Documentation for the Engine User Settings Unreal Engine plugin.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0b",
+  "theme_color": "#0a0a0b",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "98x98", "type": "image/png" }
+  ]
+}

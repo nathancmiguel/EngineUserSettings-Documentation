@@ -1,138 +1,87 @@
 ---
 title: Shader Compiler
-description: In-game shader compilation
+description: Pre-compile material and Niagara shaders in game to remove shader compilation stutter.
 ---
 
-import { ImageZoom } from "fumadocs-ui/components/image-zoom";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-
-Unreal Engine has several issues with stuttering due to the shader compiler. This feature allows you to compile shaders in-game, making the experience more seamless.
+Unreal Engine can hitch while shaders are compiled the first time a material or Niagara system is rendered. `ABP_ShadersCompiler` loads every material and Niagara system of the project ahead of time (for example in a loading screen or main menu), so the shaders are ready before gameplay starts.
 
 ## How to use
 
 <Steps>
-    <Step>Drag and drop `ABP_ShadersCompiler` to your menu level</Step>
-    <Step>
-        Get reference to the actor and them call `start` function from
-        `ABP_ShadersCompiler`
-    </Step>
+  <Step>
+    Drag and drop `ABP_ShadersCompiler` into your menu level.
+  </Step>
+  <Step>
+    Get a reference to the actor and call its [Start](#start) function.
+  </Step>
+  <Step>
+    Bind to [On Shader Compiled](#on-shader-compiled) to update a progress bar and to [On Finish](#on-finish) to continue to the game.
+  </Step>
 </Steps>
 
--   Warning: Avoid compiling shaders in editor mode, as this will compile the engine’s built-in materials and may lead to increased RAM usage.
+<Callout type="warn">
+  Avoid compiling shaders in the editor: it also compiles the engine's built-in materials and can greatly increase RAM usage. Test it in a packaged build.
+</Callout>
 
-<video width="60%" controls>
-    <source src="/video/Shaders.mp4" type="video/mp4" />
+<video className="w-full max-w-2xl rounded-xl border" controls preload="metadata">
+  <source src="/video/Shaders.mp4" type="video/mp4" />
 </video>
 
 ## Variables
 
-### Material Count
+Use these variables to display progress, e.g. `Materials Count / Materials Length`.
 
--   Get number of material shaders compiled
-    <ImageZoom
-        src="/img/shaders/materialcount.png"
-        alt="Shader compiler"
-        width={350}
-        height={0}
-        loading="lazy"
-    />
+<UVariables
+  variables={[
+    { name: "Materials Count", type: "int", description: "Number of materials whose shaders have been compiled." },
+    { name: "Materials Length", type: "int", description: "Total number of materials to compile." },
+    { name: "Niagara Count", type: "int", description: "Number of Niagara systems compiled." },
+    { name: "Niagara Length", type: "int", description: "Total number of Niagara systems to compile." },
+  ]}
+/>
 
-### Material Length
-
--   Get number of material shaders to be compiled
-    <ImageZoom
-        src="/img/shaders/materiallength.png"
-        alt="Shader compiler"
-        width={350}
-        height={0}
-        loading="lazy"
-    />
-
-### Niagara Count
-
--   Get number of niagara system compiled
-    <ImageZoom
-        src="/img/shaders/niagaracount.png"
-        alt="Shader compiler"
-        width={350}
-        height={0}
-        loading="lazy"
-    />
-
-### Niagara Length
-
--   Get number of niagara system to be compiled
-    <ImageZoom
-        src="/img/shaders/niagaralength.png"
-        alt="Shader compiler"
-        width={350}
-        height={0}
-        loading="lazy"
-    />
-
-## Nodes
+## Functions
 
 ### Start
 
--   Start shader compilation
+Starts the shader compilation.
 
 <UFunction
-    name="Start"
-    className="ABP Shaders Compiler"
-    pure={false}
-    inPins={[
-        { name: "", pintype: "exec" },
-        { name: "Target", pintype: "object" },
-    ]}
-    outPins={[{ name: "", pintype: "exec" }]}
+  name="Start"
+  target="ABP Shaders Compiler"
+  inputs={[{ name: "Target", type: "object" }]}
 />
 
 ### Stop
 
--   Stop shader compilation
+Stops the shader compilation.
 
 <UFunction
-    name="Stop"
-    className="ABP Shaders Compiler"
-    pure={false}
-    inPins={[
-        { name: "", pintype: "exec" },
-        { name: "Target", pintype: "object" },
-    ]}
-    outPins={[{ name: "", pintype: "exec" }]}
+  name="Stop"
+  target="ABP Shaders Compiler"
+  inputs={[{ name: "Target", type: "object" }]}
 />
 
 ## Events
 
 ### On Started
 
--   Event triggered when shader start to compile
+Called when the compilation starts.
 
-<UEvents
-    name="On Started"
-    showBindNode={true}
-    outPins={[{ name: "", pintype: "exec" }]}
-/>
+<UEvent name="On Started" bind />
 
 ### On Shader Compiled
 
--   Event triggered when one shader has been compiled.
+Called every time a shader has been compiled.
 
-<UEvents
-    name="On Shader Compiled"
-    showBindNode={true}
-    outPins={[
-        { name: "", pintype: "exec" },
-        { name: "Shaders Compiled", pintype: "int" },
-    ]}
+<UEvent
+  name="On Shader Compiled"
+  bind
+  outputs={[{ name: "Shaders Compiled", type: "int", description: "Number of shaders compiled so far." }]}
 />
 
-### On Fisnish
+### On Finish
 
--   Event triggered when all shaders compilation has ben finished.
+Called when every shader has been compiled.
 
-<UEvents
-    name="On Fisnish"
-    showBindNode={true}
-    outPins={[{ name: "", pintype: "exec" }]}
-/>
+<UEvent name="On Finish" bind />

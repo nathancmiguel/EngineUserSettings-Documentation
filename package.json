@@ -1,38 +1,72 @@
 {
-  "name": "engineusersettings",
-  "version": "0.0.0",
+  "name": "engineusersettings-documentation",
   "private": true,
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
   "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "start": "next start",
-    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
-    "postinstall": "fumadocs-mdx",
-    "lint": "biome check",
-    "format": "biome format --write"
+    "dev": "vite dev --port 3000",
+    "generate-routes": "vite build",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "biome format",
+    "lint": "biome lint",
+    "check": "biome check"
   },
   "dependencies": {
-    "fumadocs-core": "16.7.10",
-    "fumadocs-mdx": "14.2.11",
-    "fumadocs-ui": "16.7.10",
-    "lucide-react": "^1.7.0",
-    "next": "16.2.2",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "tailwind-merge": "^3.5.0"
+    "@base-ui/react": "latest",
+    "@faker-js/faker": "latest",
+    "@fontsource-variable/oxanium": "latest",
+    "@shadcn/react": "latest",
+    "@tailwindcss/vite": "latest",
+    "@tanstack/match-sorter-utils": "latest",
+    "@tanstack/react-devtools": "latest",
+    "@tanstack/react-form": "latest",
+    "@tanstack/react-query": "latest",
+    "@tanstack/react-query-devtools": "latest",
+    "@tanstack/react-router": "latest",
+    "@tanstack/react-router-devtools": "latest",
+    "@tanstack/react-router-ssr-query": "latest",
+    "@tanstack/react-start": "latest",
+    "@tanstack/react-table": "latest",
+    "class-variance-authority": "latest",
+    "cmdk": "latest",
+    "cn": "latest",
+    "date-fns": "latest",
+    "embla-carousel-react": "latest",
+    "fumadocs-core": "latest",
+    "fumadocs-mdx": "latest",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@latest",
+    "input-otp": "latest",
+    "lucide-react": "latest",
+    "nitro": "latest",
+    "react": "latest",
+    "react-day-picker": "latest",
+    "react-dom": "latest",
+    "react-resizable-panels": "latest",
+    "recharts": "latest",
+    "shadcn": "latest",
+    "shiki": "latest",
+    "tailwindcss": "latest",
+    "tw-animate-css": "latest",
+    "zod": "latest"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.10",
-    "@tailwindcss/postcss": "^4.2.2",
-    "@types/mdx": "^2.0.13",
-    "@types/node": "^25.5.2",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "postcss": "^8.5.8",
-    "tailwindcss": "^4.2.2",
-    "typescript": "^6.0.2"
+    "@biomejs/biome": "latest",
+    "@tanstack/devtools-vite": "latest",
+    "@types/mdx": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "latest",
+    "typescript": "^6.0.3",
+    "vite": "latest"
   },
-  "overrides": {
-    "react-medium-image-zoom": "5.4.1"
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
   }
 }

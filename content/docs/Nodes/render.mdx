@@ -1,146 +1,408 @@
 ---
 title: Render
-description: Post-Processing settings
+description: Change global illumination, reflections, shadows, anti-aliasing, post-processing, Nanite and MegaLights at runtime.
 ---
 
-import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+The render nodes change console variables through the given player controller and save them to the `[/Script/Engine.RendererSettings]` section of `GameUserSettings.ini`. Saved values are restored automatically when the game starts (see [Common issues](/docs/issues#my-settings-are-not-restored-on-startup)). Unlike RHI and shader model changes, they apply **immediately**.
 
-## Set GI Method (UE5 only)
+## Global illumination
 
-* Change Global Illumination method (Lumen, SSR, Raytraced, None)
-<ImageZoom src="/img/ue5/setgimethod.png" alt='Render' width={293} height={0} />
+### Set Global Illumination Method <UEVersion>UE5 only</UEVersion>
 
-## Get GI Method (UE5 only)
+Changes the dynamic global illumination method (`r.DynamicGlobalIlluminationMethod`).
 
-* Change Global Illumination method (Lumen, SSR, Raytraced, None)
-<ImageZoom src="/img/ue5/getgimethod.png" alt='Render' width={146} height={0} />
+<UFunction
+  name="Set Global Illumination Method"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object", typeName: "Player Controller", description: "Player whose console receives the command." },
+    { name: "GIMethod", type: "enum", typeName: "EDynamicGlobalIlluminationMethod", defaultValue: "Lumen", description: "New global illumination method." },
+  ]}
+/>
 
-## Set Allow Megalights (UE 5.5^)
+<UEnum
+  name="EDynamicGlobalIlluminationMethod"
+  values={[
+    { name: "None", cvar: 0, description: "No dynamic GI." },
+    { name: "Lumen", cvar: 1, description: "Lumen global illumination." },
+    { name: "Screen Space", cvar: 2, description: "Screen space GI (SSGI), cheaper but limited to what is on screen." },
+    { name: "Plugin", cvar: 3, description: "GI provided by a third-party plugin." },
+  ]}
+/>
 
-* Enable or disable Megalights
-<ImageZoom src="/img/ue5/setallowmegalights.png" alt='Render' width={186} height={0} />
+### Get Global Illumination Method <UEVersion>UE5 only</UEVersion>
 
-## Get Allow Megalights (UE 5.5^)
+<UFunction
+  name="Get Global Illumination Method"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EDynamicGlobalIlluminationMethod" }]}
+/>
 
-* Get if Megalights is enabled or disabled
-<ImageZoom src="/img/ue5/getallowmegalights.png" alt='Render' width={182} height={0} />
+### Set Global Illumination <UEVersion tone="ue4">UE4 only</UEVersion>
 
-## Set Global Illumination (UE4 only)
+Enables or disables global illumination.
 
-* Enable or disable global illumination
-<ImageZoom src="/img/ue4/setgi.png" alt='Render' width={194} height={0} />
+<UFunction
+  name="Set Global Illumination"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Enable", type: "bool", defaultValue: true },
+  ]}
+/>
 
-## Get Global Illumination (UE4 only)
+### Get Global Illumination <UEVersion tone="ue4">UE4 only</UEVersion>
 
-* Get if global illumination is enabled or disabled
-<ImageZoom src="/img/ue4/getgi.png" alt='Render' width={196} height={0} />
+<UFunction
+  name="Get Global Illumination"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
 
-## Set SSGI Quality
+### Set SSGI Quality
 
-* Set Screen Space Global Illumination quality
-<ImageZoom src="/img/ue4/setssgiquality.png" alt='Render' width={161} height={0} />
+Sets the screen space global illumination quality (`r.SSGI.Quality`, `0`–`4`).
 
-## Get SSGI Quality
+<UFunction
+  name="Set SSGIQuality"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Quality", type: "int", defaultValue: 3, description: "0 disables SSGI, 4 is the highest quality." },
+  ]}
+/>
 
-* Get Screen Space Global Illumination quality
-<ImageZoom src="/img/ue4/getssgiquality.png" alt='Render' width={160} height={0} />
+### Get SSGI Quality
 
-## Set Reflection Method (UE5 only)
+<UFunction
+  name="Get SSGIQuality"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
 
-* Change reflection method (Lumen, SSR, Raytraced, None)
-<ImageZoom src="/img/ue5/setreflectionmethod.png" alt='Render' width={290} height={0} />
+### Set Allow MegaLights <UEVersion tone="since">UE 5.5+</UEVersion>
 
-## Get Reflection Method (UE5 only)
+Enables or disables MegaLights.
 
-* Get reflection method
-<ImageZoom src="/img/ue5/getreflectionmethod.png" alt='Render' width={196} height={0} />
+<UFunction
+  name="Set Allow Megalights"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Value", type: "bool", defaultValue: true },
+  ]}
+/>
 
-## Set SSR Quality
+### Get Allow MegaLights <UEVersion tone="since">UE 5.5+</UEVersion>
 
-* Change Screen Space Reflection Quality
-<ImageZoom src="/img/ue4/setssrquality.png" alt='Render' width={155} height={0} />
+<Callout type="info">The node is spelled <strong>Get Allow Megalighs</strong> in the plugin, so search for “Megalighs” in the Blueprint action menu.</Callout>
 
-## Get SSR Quality
+<UFunction
+  name="Get Allow Megalighs"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
 
-* Get Screen Space Reflection Quality
-<ImageZoom src="/img/ue4/getssrquality.png" alt='Render' width={155} height={0} />
+## Reflections
 
-## Set Shadow Method (UE5 only)
+### Set Reflection Method <UEVersion>UE5 only</UEVersion>
 
-* Change shadow method (Shadow Map, Virtual Shadow Maps)
-<ImageZoom src="/img/ue5/setshadowmethod.png" alt='Render' width={292} height={0} />
+Changes the reflection method (`r.ReflectionMethod`).
 
-## Get Shadow Method (UE5 only)
+<UFunction
+  name="Set Reflection Method"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Reflection Method", type: "enum", typeName: "EReflectionMethod", defaultValue: "Lumen", description: "New reflection method." },
+  ]}
+/>
 
-* Get Shadow Method
-<ImageZoom src="/img/ue5/getshadowmethod.png" alt='Render' width={183} height={0} />
+<UEnum
+  name="EReflectionMethod"
+  values={[
+    { name: "None", cvar: 0, description: "Only reflection captures and sky light." },
+    { name: "Lumen", cvar: 1, description: "Lumen reflections." },
+    { name: "Screen Space", cvar: 2, description: "Screen space reflections (SSR)." },
+  ]}
+/>
 
-## Set AA Method
+### Get Reflection Method <UEVersion>UE5 only</UEVersion>
 
-* Change Antialiasing method (None, FXAA, MSAA, TAA, TSR)
-<ImageZoom src="/img/ue4/setaamethod.png" alt='Render' width={263} height={0} />
+<UFunction
+  name="Get Reflection Method"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EReflectionMethod" }]}
+/>
 
-## Get AA Method
+### Set SSR Quality
 
-* Get Antialiasing method
-<ImageZoom src="/img/ue4/getaamethod.png" alt='Render' width={151} height={0} />
+Sets the screen space reflection quality (`r.SSR.Quality`, `0`–`4`).
 
-## Set MSAA Quality
+<UFunction
+  name="Set SSRQuality"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Quality", type: "int", defaultValue: 3, description: "0 disables SSR, 4 is the highest quality." },
+  ]}
+/>
 
-* Change MSAA quality
-<ImageZoom src="/img/ue4/setmsaaquality.png" alt='Render' width={263} height={0} />
+### Get SSR Quality
 
-## Get MSAA Quality
+<UFunction
+  name="Get SSRQuality"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
 
-* Get MSAA quality
-<ImageZoom src="/img/ue4/getmsaaquality.png" alt='Render' width={166} height={0} />
+## Shadows
 
-## Set Ambient Occlusion
+### Set Shadow Method <UEVersion>UE5 only</UEVersion>
 
-* Enable or disable Ambient Occlusion
-<ImageZoom src="/img/ue4/setao.png" alt='Render' width={196} height={0} />
+Switches between regular shadow maps and Virtual Shadow Maps (`r.Shadow.Virtual.Enable`).
 
-## Get Ambient Occlusion
+<UFunction
+  name="Set Shadow Method"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Shadow Map Method", type: "enum", typeName: "EShadowMapMethod", defaultValue: "Virtual Shadow Maps" },
+  ]}
+/>
 
-* Get if Ambient Occlusion is enabled or disabled
-<ImageZoom src="/img/ue4/getao.png" alt='Render' width={197} height={0} />
+<UEnum
+  name="EShadowMapMethod"
+  values={[
+    { name: "Shadow Maps", cvar: 0, description: "Classic cascaded shadow maps." },
+    { name: "Virtual Shadow Maps", cvar: 1, description: "High resolution shadows designed for Nanite. Requires SM6." },
+  ]}
+/>
 
-## Set Bloom Quality
+### Get Shadow Method <UEVersion>UE5 only</UEVersion>
 
-* Change bloom quality
-<ImageZoom src="/img/ue4/setbloomquality.png" alt='Render' width={196} height={0} />
+<UFunction
+  name="Get Shadow Method"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EShadowMapMethod" }]}
+/>
 
-## Get Bloom Quality
+## Anti-aliasing
 
-* Get bloom quality
-<ImageZoom src="/img/ue4/getbloomquality.png" alt='Render' width={171} height={0} />
+### Set Antialiasing Method
 
-## Set Lens Flare Quality
+Changes the desktop anti-aliasing method (`r.AntiAliasingMethod`).
 
-* Change lens flare quality
-<ImageZoom src="/img/ue4/setlensflarequality.png" alt='Render' width={193} height={0} />
+<UFunction
+  name="Set Antialiasing Method"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Antialiasing Method", type: "enum", typeName: "EAntiAliasingMethod", defaultValue: "TSR" },
+  ]}
+/>
 
-## Get Lens Flare Quality
+<UEnum
+  name="EAntiAliasingMethod"
+  values={[
+    { name: "None", cvar: 0 },
+    { name: "FXAA", cvar: 1, description: "Fast Approximate Anti-Aliasing." },
+    { name: "Temporal AA", cvar: 2, description: "Temporal Anti-Aliasing." },
+    { name: "MSAA", cvar: 3, description: "Multisample Anti-Aliasing, forward renderer only. See Set MSAA Quality." },
+    { name: "TSR", cvar: 4, description: "Temporal Super Resolution (UE5)." },
+  ]}
+/>
 
-* Get lens flare quality
-<ImageZoom src="/img/ue4/getlensflarequality.png" alt='Render' width={194} height={0} />
+### Get Antialiasing Method
 
-## Set Motion Blur Quality
+<UFunction
+  name="Get Antialiasing Method"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EAntiAliasingMethod" }]}
+/>
 
-* Change motion blur quality
-<ImageZoom src="/img/ue4/setmotionblurquality.png" alt='Render' width={199} height={0} />
+### Set Mobile Antialiasing Method
 
-## Get Motion Blur Quality
+Changes the anti-aliasing method used by the mobile renderer / Performance Mode (`r.Mobile.AntiAliasing`).
 
-* Get motion blur quality
-<ImageZoom src="/img/ue4/getmotionblurquality.png" alt='Render' width={202} height={0} />
+<UFunction
+  name="Set Mobile Antialiasing Method"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Antialiasing Method", type: "enum", typeName: "EMobileAntiAliasingMethod", defaultValue: "FXAA" },
+  ]}
+/>
 
-## Use nanite (UE5 only)
+<UEnum
+  name="EMobileAntiAliasingMethod"
+  values={[
+    { name: "None", cvar: 0 },
+    { name: "FXAA", cvar: 1 },
+    { name: "Temporal AA", cvar: 2 },
+    { name: "MSAA", cvar: 3 },
+  ]}
+/>
 
-* Enable or disable nanite
-<ImageZoom src="/img/ue5/usenanite.png" alt='Render' width={199} height={0} />
+### Get Mobile Antialiasing Method
 
-## Get Use Nanite (UE5 only)
+<UFunction
+  name="Get Mobile Antialiasing Method"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EMobileAntiAliasingMethod" }]}
+/>
 
-* Get if nanite is enabled or disabled
-<ImageZoom src="/img/ue5/getusenanite.png" alt='Render' width={202} height={0} />
+### Set MSAA Quality
+
+Sets the MSAA sample count (`r.MSAACount`).
+
+<UFunction
+  name="Set MSAAQuality"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "MSAAQuality", type: "enum", typeName: "ECompositingSampleCount", defaultValue: "Four" },
+  ]}
+/>
+
+<UEnum
+  name="ECompositingSampleCount"
+  values={[
+    { name: "One", cvar: 1, description: "No MSAA." },
+    { name: "Two", cvar: 2 },
+    { name: "Four", cvar: 4 },
+    { name: "Eight", cvar: 8 },
+  ]}
+/>
+
+### Get MSAA Quality
+
+<UFunction
+  name="Get MSAAQuality"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "ECompositingSampleCount" }]}
+/>
+
+## Post-processing
+
+### Set Ambient Occlusion
+
+Enables or disables ambient occlusion (`r.DefaultFeature.AmbientOcclusion`, `r.AmbientOcclusionLevels`).
+
+<UFunction
+  name="Set Ambient Occlusion"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Enable", type: "bool", defaultValue: true },
+  ]}
+/>
+
+### Get Ambient Occlusion
+
+<UFunction
+  name="Get Ambient Occlusion"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Set Bloom Quality
+
+Sets the bloom quality (`r.BloomQuality`, `0`–`5`). `0` disables bloom.
+
+<UFunction
+  name="Set Bloom Quality"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Quality", type: "int", defaultValue: 5 },
+  ]}
+/>
+
+### Get Bloom Quality
+
+<UFunction
+  name="Get Bloom Quality"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Lens Flare Quality
+
+Sets the lens flare quality (`r.LensFlareQuality`, `0`–`3`). `0` disables lens flares.
+
+<UFunction
+  name="Set Lens Flare Quality"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Quality", type: "int", defaultValue: 2 },
+  ]}
+/>
+
+### Get Lens Flare Quality
+
+<UFunction
+  name="Get Lens Flare Quality"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Motion Blur Quality
+
+Sets the motion blur quality (`r.MotionBlurQuality`, `0`–`4`). `0` disables motion blur.
+
+<UFunction
+  name="Set Motion Blur Quality"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Quality", type: "int", defaultValue: 4 },
+  ]}
+/>
+
+### Get Motion Blur Quality
+
+<UFunction
+  name="Get Motion Blur Quality"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+## Geometry
+
+### Set Use Nanite <UEVersion>UE5 only</UEVersion>
+
+Enables or disables Nanite (`r.Nanite`). Nanite requires SM6.
+
+<UFunction
+  name="Set Use Nanite"
+  target="Engine User Settings"
+  inputs={[
+    { name: "Controller", type: "object" },
+    { name: "Enable", type: "bool", defaultValue: true },
+  ]}
+/>
+
+### Get Use Nanite <UEVersion>UE5 only</UEVersion>
+
+<UFunction
+  name="Get Use Nanite"
+  target="Engine User Settings"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>

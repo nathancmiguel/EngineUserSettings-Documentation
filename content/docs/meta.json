@@ -1,8 +1,12 @@
 {
-    "pages": [
-        "index",
-        "setup",
-        "issues",
-        "Nodes"
-    ]
+  "title": "Engine User Settings",
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "setup",
+    "issues",
+    "changelog",
+    "---Blueprint Nodes---",
+    "...Nodes"
+  ]
 }

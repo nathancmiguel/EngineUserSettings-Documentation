@@ -1,9 +1,11 @@
 {
-    "pages": [
-        "finding",
-        "rhi",
-        "shader-model",
-        "render",
-        "shader-compiler"
-    ]
+  "title": "Nodes",
+  "pages": [
+    "finding",
+    "rhi",
+    "shader-model",
+    "render",
+    "shader-compiler",
+    "utilities"
+  ]
 }

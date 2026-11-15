@@ -1,22 +1,49 @@
 ---
 title: RHI
-description: Vulkan, DirectX 11, DirectX 12 
+description: Switch the graphics API between DirectX 11, DirectX 12 and Vulkan.
 ---
 
-import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+The RHI (Render Hardware Interface) is the graphics API used by the engine. The choice is saved to `[D3DRHIPreference] PreferredRHI` in `GameUserSettings.ini`.
 
-## Set Prefered RHI
+<Callout type="warn">The game must be restarted for a new RHI to take effect.</Callout>
 
-* Change between DX11, DX12 or VULKAN.
-* OBS: Game need to be restarted to take effect.
-<ImageZoom src="/img/ue4/setpreferredrhi.png" alt='RHI' width={263} height={0} />
+<UEnum
+  name="EGraphicsRHI"
+  values={[
+    { name: "DirectX 12", cvar: "dx12", description: "Required for SM6, Lumen hardware ray tracing, Nanite and Virtual Shadow Maps." },
+    { name: "DirectX 11", cvar: "dx11", description: "Widest compatibility. SM6 isn't available and falls back to SM5." },
+    { name: "Vulkan", cvar: "vulkan", description: "Cross-platform API; must be enabled in Targeted RHIs." },
+  ]}
+/>
 
-## Get Prefered RHI
+## Set Preferred RHI
 
-* Gets the RHI that will be used when the game is restarted.
-<ImageZoom src="/img/ue4/getpreferredrhi.png" alt='RHI' width={169} height={0} />
+Saves the RHI that will be used the next time the game starts. The currently preferred feature level is re-applied so it stays valid for the new RHI.
+
+<UFunction
+  name="Set Preferred RHI"
+  target="Engine User Settings BPLibrary"
+  inputs={[{ name: "Graphics RHI", type: "enum", typeName: "EGraphicsRHI", defaultValue: "DirectX 12", description: "RHI to use after a restart." }]}
+/>
+
+## Get Preferred RHI
+
+Returns the RHI that will be used when the game is restarted. Returns **Vulkan** when nothing has been saved yet.
+
+<UFunction
+  name="Get Preferred RHI"
+  target="Engine User Settings BPLibrary"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EGraphicsRHI" }]}
+/>
 
 ## Get Current RHI
 
-* Gets the RHI that will be used when the game is restarted.
-<ImageZoom src="/img/ue4/getcurrentrhi.png" alt='RHI' width={161} height={0} />
+Returns the RHI the game is running with right now (DirectX 12, DirectX 11, otherwise Vulkan).
+
+<UFunction
+  name="Get Current RHI"
+  target="Engine User Settings BPLibrary"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EGraphicsRHI" }]}
+/>

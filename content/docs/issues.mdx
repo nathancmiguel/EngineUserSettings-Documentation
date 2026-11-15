@@ -1,26 +1,38 @@
 ---
 title: Common issues
-description: Common questions and issues
+description: Answers to common questions about platforms, dedicated servers and saved settings.
 ---
-
-import { Step, Steps } from "fumadocs-ui/components/steps";
 
 ## Support for other platforms
 
-The plugin has not been tested on other platforms, but it is possible to use the nodes from the `Render` section on platforms such as Linux, Mac, consoles, and mobile. You will likely need to save the values manually as well.
+The plugin officially targets **Windows (Win64)**; since v1.1.4 Win32 is no longer listed in the plugin descriptor. The nodes in the [Render](/docs/Nodes/render) section only change console variables, so they can work on Linux, macOS, consoles and mobile, but you will probably need to save the values yourself (see [Set Game User Settings Ini Value](/docs/Nodes/utilities#set-game-user-settings-ini-value)).
 
-## Package dedicated server
+## Packaging a dedicated server
 
-If you are experiencing issues packaging a dedicated server due to a plugin, please try the following steps
+If packaging a dedicated server fails because of the plugin, change the module's loading phase:
 
 <Steps>
   <Step>
-    Go to `EngineUserSettings` root folder
+    Open the `EngineUserSettings` plugin folder.
   </Step>
   <Step>
-    Open `EngineUserSettings.uplugin` with a text editor of your preference
+    Open `EngineUserSettings.uplugin` in a text editor.
   </Step>
   <Step>
-    Change `LoadingPhase` to `PreLoadingScreen`
+    Change `LoadingPhase` from `PostEngineInit` to `PreLoadingScreen`.
   </Step>
 </Steps>
+
+## My settings are not restored on startup
+
+Rendering settings are saved in the `[/Script/Engine.RendererSettings]` section of `GameUserSettings.ini` and re-applied when the module starts. Since v1.1.4 they are applied with `IConsoleVariable::Set` at the **SetByCode** priority:
+
+- the player's saved value wins over project and scalability settings;
+- a value typed in the console can still override it;
+- unknown console variables (for example a UE5-only setting in a UE4 build) are ignored instead of producing errors.
+
+If a value still isn't restored, check that the key is present in `Saved/Config/Windows/GameUserSettings.ini` of your packaged game.
+
+## Get Current Feature Level returns the wrong value in menus
+
+There is no play world in the main menu, in the editor outside PIE or during map travel. Since v1.1.4, [Get Current Feature Level](/docs/Nodes/shader-model#get-current-feature-level) falls back to the maximum feature level supported by the hardware in those cases instead of crashing.

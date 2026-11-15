@@ -1,30 +1,38 @@
 ---
 title: Setup
-description: Setup your project
+description: Configure your Unreal Engine project so players can switch RHI and shader model in game.
 ---
-
-import { Step, Steps } from "fumadocs-ui/components/steps";
 
 <Steps>
   <Step>
-    Go to `Edit > Project Settings > Windows`.
+    ### Enable the plugin
+
+    Install the plugin from Fab (or copy the `EngineUserSettings` folder into your project's `Plugins` folder) and enable it in **Edit › Plugins**. Blueprint-only projects that use the source version need an empty C++ class so the module can be compiled.
   </Step>
   <Step>
-    Check the boxes under `Targeted RHIs` tab that you need.
+    ### Target the RHIs you need
+
+    Go to **Edit › Project Settings › Platforms › Windows** and tick every RHI under **Targeted RHIs** that players should be able to select (DirectX 12, DirectX 11, Vulkan) together with the shader formats (SM6, SM5) you want to ship.
   </Step>
   <Step>
-    Make sure you are packaging your game using `Shipping` option.
+    ### Package in Shipping
+
+    Package your game with the **Shipping** build configuration. RHI and feature level changes are applied by the engine on startup, so they can't be tested inside the editor.
   </Step>
 </Steps>
 
+<Callout type="warn">
+  The RHI and the shader model are read when the game starts, so the game must be **restarted** for those changes to take effect. Rendering settings are applied immediately.
+</Callout>
+
 ## UE4 video tutorial
 
-<video width="60%"  controls>
-    <source src="/video/UE4Guide.mp4" type="video/mp4" />
+<video className="w-full max-w-2xl rounded-xl border" controls preload="metadata">
+  <source src="/video/UE4Guide.mp4" type="video/mp4" />
 </video>
 
 ## UE5 video tutorial
 
-<video width="60%"  controls>
-    <source src="/video/UE5Guide.mp4" type="video/mp4" />
+<video className="w-full max-w-2xl rounded-xl border" controls preload="metadata">
+  <source src="/video/UE5Guide.mp4" type="video/mp4" />
 </video>

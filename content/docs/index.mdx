@@ -1,23 +1,39 @@
 ---
 title: Welcome
-description: Introduction
+description: Engine User Settings is an Unreal Engine plugin that exposes RHI, shader model, rendering and post-processing settings to Blueprints so players can change them in game.
 ---
 
-This product is a plugin for Unreal Engine that allows you to customize various settings and features of the engine in game. You can change the graphics API, enable or disable ray tracing, nanite, global illumination, shadows, reflections, anti-aliasing, and other post-process effects. You can also switch between different shader models, feature levels and compile shaders in game to optimize your game performance. This plugin gives you more control and flexibility over the visual quality and performance of your Unreal Engine projects.
+**Engine User Settings** is an Unreal Engine plugin that lets players customize engine features at runtime. You can switch the graphics API, the shader model / feature level, global illumination, reflections, shadows, anti-aliasing, Nanite, MegaLights and other post-process effects, and pre-compile shaders in game to remove hitches. Everything is exposed as Blueprint nodes and saved to `GameUserSettings.ini`, so the player's choices are restored on the next launch.
 
-## Supported Unreal Versions
+<Callout title="Latest release: v1.1.4 (Unreal Engine 5.8)">
+  Settings are now restored with the console variable system instead of console commands, the preferred feature level is read correctly again and *Performance Mode* can be selected on DirectX 12. See the [changelog](/docs/changelog).
+</Callout>
 
-UE4          | UE5
--------------|----------------
-4.26 - 4.27  | 5.1 - 5.5
+## Supported Unreal versions
+
+| Unreal Engine 4 | Unreal Engine 5 | Platforms |
+| --------------- | --------------- | --------- |
+| 4.26 – 4.27     | 5.1 – 5.8       | Windows (Win64) |
+
+## What you can change
+
+| Area | Nodes |
+| ---- | ----- |
+| [Graphics API](/docs/Nodes/rhi) | DirectX 11, DirectX 12, Vulkan |
+| [Shader model](/docs/Nodes/shader-model) | SM6, SM5, Performance Mode (ES 3.1) |
+| [Rendering](/docs/Nodes/render) | GI method, reflections, shadows, anti-aliasing, MSAA, AO, bloom, lens flares, motion blur, Nanite, MegaLights |
+| [Shader compiler](/docs/Nodes/shader-compiler) | In-game material and Niagara shader pre-compilation |
+| [Utilities](/docs/Nodes/utilities) | Write any value to `GameUserSettings.ini`, list materials and Niagara systems |
 
 ## Links
 
 <Cards>
-  <Card title="Video Showcase" href="https://www.youtube.com/watch?v=IVlGHYiMjxY" />
-  <Card title="Get UE5 Plugin" href="https://www.fab.com/listings/a3e48cd3-8b06-4121-8e97-0d17b60aca05" />
-  <Card title="Get UE4 Plugin (It's free)" href="https://1drv.ms/f/s!As665UQkWddtpBVB5vyecSvJ15zN?e=o5j3mH" />
-  <Card title="Discord group" href="https://discord.gg/DBNATxA6Jx" />
+  <Card title="Get the UE5 plugin on Fab" href="https://www.fab.com/listings/a3e48cd3-8b06-4121-8e97-0d17b60aca05" />
+  <Card title="Get the UE4 plugin (free)" href="https://1drv.ms/f/s!As665UQkWddtpBVB5vyecSvJ15zN?e=o5j3mH" />
+  <Card title="Video showcase" href="https://www.youtube.com/watch?v=IVlGHYiMjxY" />
+  <Card title="Discord community" href="https://discord.gg/DBNATxA6Jx" />
 </Cards>
 
-OBS: If you have downloaded the free version for Unreal Engine 4, consider purchasing the plugin after finishing the project!
+<Callout type="info">
+  If you downloaded the free Unreal Engine 4 version, consider buying the plugin on Fab once your project is finished!
+</Callout>

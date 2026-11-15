@@ -1,27 +1,71 @@
 ---
 title: Shader Model
-description: UE5 only - Performance mode, SM5, SM6
+description: Switch between SM6, SM5 and Performance Mode (ES 3.1) in Unreal Engine 5.
 ---
 
-import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+<UEVersion>UE5 only</UEVersion>
 
-## Set Prefered Feature Level
+The feature level controls which shader model the renderer uses. The choice is saved to `[D3DRHIPreference] PreferredFeatureLevel` in `GameUserSettings.ini`.
 
-* Change between SM5, SM6 and Performance Mode.
-* OBS: Game need to be restarted to take effect.
-<ImageZoom src="/img/ue5/setpreferredfeaturelevel.png" alt='Shader model' width={292} height={0} />
+<Callout type="warn">The game must be restarted for a new feature level to take effect.</Callout>
 
-## Get Prefered Feature Level
+<UEnum
+  name="EShaderFormat"
+  values={[
+    { name: "SM6", cvar: "sm6", description: "Shader Model 6. Needed for Nanite, Lumen and Virtual Shadow Maps. DirectX 12 and Vulkan only." },
+    { name: "SM5", cvar: "sm5", description: "Shader Model 5. Works on every desktop RHI." },
+    { name: "Performance Mode", cvar: "es31", description: "ES 3.1 mobile renderer for low-end hardware." },
+    { name: "Invalid", description: "Returned when no value is saved or the feature level is unknown." },
+  ]}
+/>
 
-* Gets the Shader Model that will be used when the game is restarted.
-<ImageZoom src="/img/ue5/getpreferredfeaturelevel.png" alt='Shader model' width={230} height={0} />
+## Set Preferred Feature Level
+
+Saves the shader model used the next time the game starts. The value is validated against the preferred RHI:
+
+| Preferred RHI | SM6 | SM5 | Performance Mode |
+| ------------- | --- | --- | ---------------- |
+| DirectX 12    | `sm6` | `sm5` | `es31` <UEVersion tone="since">v1.1.4</UEVersion> |
+| DirectX 11    | `sm5` (falls back) | `sm5` | `es31` |
+| Vulkan        | `sm6` | `sm5` | `es31` |
+
+<UFunction
+  name="Set Preferred Feature Level"
+  target="Engine User Settings BPLibrary"
+  inputs={[{ name: "Shader Format", type: "enum", typeName: "EShaderFormat", defaultValue: "SM6", description: "Shader model to use after a restart." }]}
+/>
+
+## Get Preferred Feature Level
+
+Returns the shader model that will be used when the game is restarted, or **Invalid** if nothing has been saved.
+
+<Callout type="info">Fixed in v1.1.4: this node used to read the wrong ini key and always returned Invalid.</Callout>
+
+<UFunction
+  name="Get Preferred Feature Level"
+  target="Engine User Settings BPLibrary"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EShaderFormat" }]}
+/>
 
 ## Get Current Feature Level
 
-* Get current Shader Model.
-<ImageZoom src="/img/ue5/getcurrentfeaturelevel.png" alt='Shader model' width={216} height={0} />
+Returns the shader model of the current play world. When there is no play world (main menu, editor outside PIE, map travel) it returns the maximum feature level supported by the hardware.
+
+<UFunction
+  name="Get Current Feature Level"
+  target="Engine User Settings BPLibrary"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EShaderFormat" }]}
+/>
 
 ## Get Max Feature Level
 
-* Get max supported Shader Model by hardware.
-<ImageZoom src="/img/ue5/getmaxfeaturelevel.png" alt='Shader model' width={198} height={0} />
+Returns the highest shader model supported by the player's hardware and RHI. Use it to hide options the GPU can't run.
+
+<UFunction
+  name="Get Max Feature Level"
+  target="Engine User Settings BPLibrary"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EShaderFormat" }]}
+/>

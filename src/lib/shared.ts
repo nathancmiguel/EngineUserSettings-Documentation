@@ -1,7 +1,7 @@
 export const appName = "Engine User Settings";
 export const appTagline = "In-game graphics settings for Unreal Engine";
 export const appDescription =
-	"Engine User Settings is an Unreal Engine plugin that lets players switch RHI (DirectX 11, DirectX 12, Vulkan), shader model, global illumination, reflections, shadows, anti-aliasing, Nanite, MegaLights and post-processing quality at runtime, plus in-game shader pre-compilation.";
+	"Engine User Settings is an Unreal Engine plugin that lets players change graphics API, shader model, upscaling (TSR, DLSS, FSR, XeSS), Lumen, shadows, post-processing, LOD, latency and more at runtime from Blueprints, with presets, profiles, Auto Configure and in-game shader pre-compilation.";
 
 /**
  * Public URL of the deployed site, used for canonical links, Open Graph tags and the sitemap.
@@ -33,9 +33,9 @@ export const links = {
 
 /** Latest plugin release, keep in sync with `content/docs/changelog.mdx`. */
 export const latestRelease = {
-	version: "1.1.4",
+	version: "1.4.0",
 	engine: "5.8",
-	date: "2026-11-07",
+	date: "2026-11-19",
 };
 
 export const supportedVersions = {

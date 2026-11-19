@@ -3,7 +3,61 @@ title: Changelog
 description: Release notes for every version of the Engine User Settings plugin.
 ---
 
-## v1.1.4 — Unreal Engine 5.8 <UEVersion tone="since">Latest</UEVersion>
+## v1.4.0 — Engine User Settings Subsystem
+
+<UEVersion tone="since">Latest</UEVersion> _Released 2026-11-19 · Unreal Engine 5.8 · Win64_
+
+The biggest update so far: every node now lives in the **Engine User Settings Subsystem**, with dozens of new performance settings, presets, profiles, hardware detection and an example settings menu.
+
+<Callout type="warn" title="Breaking changes">
+  The `EngineUserSettings` Blueprint function library asset was removed and its nodes must be replaced by hand. Nodes from the C++ library are redirected automatically. Follow the [upgrade guide](/docs/upgrading) before updating.
+</Callout>
+
+### Added
+
+- **[Upscaling](/docs/Nodes/upscaling)**: choose None, FXAA, TAA, TSR, MSAA (Forward Shading) or NVIDIA DLSS, AMD FSR and Intel XeSS when their plugin is enabled. Internal resolution presets (Native → Ultra Performance), free screen percentage and **dynamic resolution** with a target frame rate.
+- **[Shadows](/docs/Nodes/shadows)**: shadow map resolution, shadow distance, cascades, contact shadows, Virtual Shadow Map resolution bias and cache.
+- **[Lumen & ray tracing](/docs/Nodes/lumen)**: Lumen GI and reflection quality, hardware ray tracing, ray tracing on/off and support detection.
+- **[Post processing](/docs/Nodes/post-processing)**: depth of field, chromatic aberration, film grain, vignette, light shafts, subsurface scattering, volumetric fog and clouds.
+- **[Effects & LOD](/docs/Nodes/effects-lod)**: translucency resolution, Niagara quality and particle limits, view distance, static/skeletal mesh LODs, landscape LODs, Nanite detail and foliage density.
+- **[Textures & VRAM](/docs/Nodes/textures)**: anisotropic filtering, texture streaming pool (automatic from the video memory) and texture mip bias.
+- **[CPU, latency & background](/docs/Nodes/performance)**: animation rate optimization, parallel animation, physics substepping, low latency mode, **NVIDIA Reflex** (Off / On / On + Boost) and a lower frame rate / volume while the window is unfocused or minimized.
+- **[Presets & profiles](/docs/Nodes/presets)**: Performance / Balanced / Quality / Ultra presets, named profiles (save, load, delete, list) and **Reset To Defaults**.
+- **[Hardware & Auto Configure](/docs/Nodes/hardware)**: GPU, driver, VRAM, RAM, CPU, SM6, ray tracing and battery information, and **Auto Configure**, which picks settings for the player's machine.
+- **[PSO precompilation](/docs/Nodes/shader-compiler#pso-precompilation--shader-nodes)**: progress of the bundled PSO cache and PSO precaching in packaged games, batch modes (Background, Fast, Precompile) and the **On Shaders Ready** event.
+- [Is Feature Level Supported](/docs/Nodes/shader-model#is-feature-level-supported), to hide shader models the GPU can't run.
+- TSR and SMAA for [mobile anti-aliasing](/docs/Nodes/render#set-mobile-anti-aliasing).
+- **Example map** `Content/Example/Maps/Example` with an **Options** settings menu built with the plugin's nodes.
+- Automation tests (`EngineUserSettings.*`) for every area.
+
+### Changed
+
+- All nodes moved to **`EngineUserSettingsSubsystem`**, most of them as static nodes that work anywhere, including menus and Editor Utility Widgets. Rendering nodes no longer need a **Controller**.
+- Rendering nodes use **clearer names and plugin enums** (`EEUSGlobalIllumination`, `EEUSReflections`, `EEUSShadowMethod`, `EEUSMSAASamples`, `EEUSMobileAntiAliasing`). See the [migration table](/docs/upgrading#node-migration-table).
+- Ambient occlusion is now a quality level (0–3) instead of on/off.
+- Desktop anti-aliasing is set with **Set Upscaler** instead of Set Antialiasing Method.
+- **Every saved value is clamped** to a safe range when it's set and when it's reapplied at startup, so hand-edited ini files can't break the game. Saved values are reapplied again when the subsystem starts, for settings registered by modules that load later.
+- **Set Preferred Feature Level** returns `false` and saves SM5 when the GPU can't run SM6, instead of letting the engine silently fall back from DirectX 12 to DirectX 11.
+- **Get Current RHI / Get Preferred RHI** return **Unknown / Default** instead of Vulkan when nothing is saved; Set Preferred RHI accepts Unknown / Default to return to the project's default.
+- **Are Shaders Compiling** (formerly Is Shader Compiling) also reports PSO compilation in packaged games.
+- **Get Screen Percentage** falls back to `r.ScreenPercentage` when the player never set it.
+- Renamed: Get Max Feature Level → Get Max Supported Feature Level, Get Materials → Get All Materials, Get Niagara Materials → Get All Niagara Systems, Set Game User Settings Ini Value → Set User Settings Ini Value (redirected automatically).
+
+### Fixed
+
+- The **MegaLights** setting wasn't restored on startup: the saved `r.MegaLights.Allowed` key didn't match the name the plugin restored.
+- Saved console variables must be numeric before they're applied.
+
+### Removed
+
+- `EngineUserSettingsBPLibrary` (C++), redirected to the subsystem.
+- The `EngineUserSettings` Blueprint function library asset. Replace its nodes using the [upgrade guide](/docs/upgrading).
+
+### Known issues
+
+- In the example map, `M_Tile` references a missing texture.
+
+## v1.1.4 — Unreal Engine 5.8
 
 _Released 2026-11-07_
 
@@ -15,7 +69,7 @@ _Released 2026-11-07_
 ### Changed
 
 - Saved rendering settings are restored with `IConsoleVariable::Set` (priority **SetByCode**) instead of building console commands from `GameUserSettings.ini`. The player's choice still wins over project and scalability settings, the console can still override it, and unknown console variables are ignored.
-- Saving a value with [Set Game User Settings Ini Value](/docs/Nodes/utilities#set-game-user-settings-ini-value) writes the file to disk but keeps it in the config cache, so `UGameUserSettings` keeps working with it.
+- Saving a value with [Set Game User Settings Ini Value](/docs/Nodes/utilities#set-user-settings-ini-value) writes the file to disk but keeps it in the config cache, so `UGameUserSettings` keeps working with it.
 - The plugin descriptor now targets **Win64** only (Win32 was removed).
 - Author, documentation and support links now point to the `nathancmiguel` GitHub account.
 
@@ -23,7 +77,7 @@ _Released 2026-11-07_
 
 - [Get Preferred Feature Level](/docs/Nodes/shader-model#get-preferred-feature-level) read the wrong `GameUserSettings.ini` key (`D3D12TargetedShaderFormats`) and returned **Invalid**. It now reads `PreferredFeatureLevel`, the key written by Set Preferred Feature Level.
 - [Get Current Feature Level](/docs/Nodes/shader-model#get-current-feature-level) could crash when there was no play world (main menu, editor outside PIE, map travel). It now falls back to the maximum supported feature level.
-- [Is Shader Compiling](/docs/Nodes/utilities#is-shader-compiling) checks that the shader compiling manager exists and is compiled out of non-editor builds.
+- [Is Shader Compiling](/docs/Nodes/shader-compiler#are-shaders-compiling) checks that the shader compiling manager exists and is compiled out of non-editor builds.
 - Restoring settings no longer depends on `GEngine` being initialized when the module starts up.
 
 ## v1.1.3 — Niagara fix
@@ -38,7 +92,7 @@ _Released 2025-03-07 · Unreal Engine 5.5 · also published for 5.6 (2025-06-03)
 _Released 2024-11-13_
 
 - Added support for Unreal Engine 5.5.
-- Added [Set / Get Allow MegaLights](/docs/Nodes/render#set-allow-megalights).
+- Added [Set / Get Allow MegaLights](/docs/Nodes/render#set-mega-lights-enabled).
 
 ## v1.1.1 / v1.1.0 — Shader compiler
 
@@ -53,7 +107,7 @@ _2023-05 – 2024-07_
 
 - Fixed saved values not being loaded and the module loading phase (2024-07).
 - Unreal Engine 5.4 fixes and updated system ini paths (2024-04).
-- Added [mobile anti-aliasing](/docs/Nodes/render#set-mobile-antialiasing-method) support (2024-02).
+- Added [mobile anti-aliasing](/docs/Nodes/render#set-mobile-anti-aliasing) support (2024-02).
 - Fixed the shadow method getter (2023-11).
 - Fixed switching to Shader Model 6 and several other bugs (2023-09).
 - Added post-process override options (2023-06).

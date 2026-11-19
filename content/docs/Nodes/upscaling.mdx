@@ -1,0 +1,153 @@
+---
+title: Upscaling & Resolution
+description: Choose TSR, TAA, FXAA, MSAA, DLSS, FSR or XeSS, set the internal resolution and enable dynamic resolution.
+---
+
+These nodes belong to the **Engine User Settings Subsystem**. Get it with **Get Game Instance Subsystem** and pick `EngineUserSettingsSubsystem` as the class.
+
+<Callout type="info">NVIDIA DLSS, AMD FSR and Intel XeSS only appear in [Get Available Upscalers](#get-available-upscalers) when their vendor plugin is enabled in the project. [Set Upscaler](#set-upscaler) returns `false` for an upscaler that isn't available. MSAA requires **Forward Shading**.</Callout>
+
+## Upscaler
+
+### Set Upscaler
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Selects the anti-aliasing / upscaling technique. DLSS, FSR and XeSS require the vendor plugin (returns false when it is not available). Saved and reapplied at startup.
+
+<UFunction
+  name="Set Upscaler"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Upscaler", type: "enum", typeName: "EEUSUpscaler", defaultValue: "None" }]}
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+<UEnum
+  name="EEUSUpscaler"
+  values={[
+    { name: "None" },
+    { name: "FXAA" },
+    { name: "TAA" },
+    { name: "TSR (Temporal Super Resolution)" },
+    { name: "NVIDIA DLSS" },
+    { name: "AMD FSR" },
+    { name: "Intel XeSS" },
+    { name: "MSAA (Forward Shading only)", description: "Multisample anti-aliasing: only with Forward Shading enabled in the project (sample count: SetMSAASampleCount)." },
+  ]}
+/>
+
+### Get Upscaler
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Returns the anti-aliasing / upscaling technique in use.
+
+<UFunction
+  name="Get Upscaler"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EEUSUpscaler" }]}
+/>
+
+### Get Available Upscalers
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Upscalers usable on this machine (vendor upscalers only when their plugin is enabled).
+
+<UFunction
+  name="Get Available Upscalers"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", container: "array", type: "enum", typeName: "EEUSUpscaler" }]}
+/>
+
+### Set Upscaler Quality
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Internal resolution preset (Quality = 67%, Performance = 50%...). Stored by UGameUserSettings.
+
+<UFunction
+  name="Set Upscaler Quality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Quality", type: "enum", typeName: "EEUSUpscalerQuality", defaultValue: "Native (100%)" }]}
+/>
+
+<UEnum
+  name="EEUSUpscalerQuality"
+  values={[
+    { name: "Native (100%)" },
+    { name: "Ultra Quality (77%)" },
+    { name: "Quality (67%)" },
+    { name: "Balanced (58%)" },
+    { name: "Performance (50%)" },
+    { name: "Ultra Performance (33%)" },
+  ]}
+/>
+
+### Set Screen Percentage
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Free internal resolution, 25..100 %.
+
+<UFunction
+  name="Set Screen Percentage"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Percentage", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Screen Percentage
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Returns the internal resolution in percent. Falls back to `r.ScreenPercentage` when the player never set it.
+
+<UFunction
+  name="Get Screen Percentage"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+## Dynamic resolution
+
+### Set Dynamic Resolution
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Resolution adapts to keep TargetFps, between MinScreenPercentage and MaxScreenPercentage.
+
+<UFunction
+  name="Set Dynamic Resolution"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Settings", type: "struct", typeName: "FEUSDynamicResolution" }]}
+/>
+
+<UStruct
+  name="FEUSDynamicResolution"
+  fields={[
+    { name: "Enabled", type: "bool", defaultValue: "false" },
+    { name: "Target Fps", type: "float", defaultValue: "60.0", range: "20 – 240", description: "Frame rate the resolution adapts to." },
+    { name: "Min Screen Percentage", type: "float", defaultValue: "50.0", range: "25 – 100" },
+    { name: "Max Screen Percentage", type: "float", defaultValue: "100.0", range: "25 – 100" },
+  ]}
+/>
+
+### Get Dynamic Resolution
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Returns the dynamic resolution settings in effect.
+
+<UFunction
+  name="Get Dynamic Resolution"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "struct", typeName: "FEUSDynamicResolution" }]}
+/>

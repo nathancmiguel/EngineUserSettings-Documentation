@@ -8,6 +8,7 @@ import {
 	UEVersion,
 	UEvent,
 	UFunction,
+	UStruct,
 	UVar,
 	UVariables,
 } from "@/components/unreal";
@@ -25,6 +26,7 @@ export function getMDXComponents(components?: MDXComponents) {
 		UVar,
 		UVariables,
 		UEnum,
+		UStruct,
 		UEVersion,
 		...components,
 	} satisfies MDXComponents;

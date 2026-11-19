@@ -1,408 +1,327 @@
 ---
-title: Render
-description: Change global illumination, reflections, shadows, anti-aliasing, post-processing, Nanite and MegaLights at runtime.
+title: Rendering
+description: Change global illumination, reflections, shadow method, MSAA, ambient occlusion, bloom, motion blur, lens flares, Nanite and MegaLights at runtime.
 ---
 
-The render nodes change console variables through the given player controller and save them to the `[/Script/Engine.RendererSettings]` section of `GameUserSettings.ini`. Saved values are restored automatically when the game starts (see [Common issues](/docs/issues#my-settings-are-not-restored-on-startup)). Unlike RHI and shader model changes, they apply **immediately**.
+These nodes are **static**: they don't need a subsystem reference and also work in menus and Editor Utility Widgets. Values are applied immediately, clamped to a safe range, saved to `[/Script/Engine.RendererSettings]` in `GameUserSettings.ini` and reapplied when the game starts. A quality of `0` turns the effect off.
 
-## Global illumination
+<Callout type="info">Anti-aliasing moved to [Set Upscaler](/docs/Nodes/upscaling#set-upscaler) in v1.4.0. Coming from v1.1? See [Upgrading](/docs/upgrading).</Callout>
 
-### Set Global Illumination Method <UEVersion>UE5 only</UEVersion>
+## Lighting, shadows & post effects
 
-Changes the dynamic global illumination method (`r.DynamicGlobalIlluminationMethod`).
+### Set Global Illumination
 
-<UFunction
-  name="Set Global Illumination Method"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object", typeName: "Player Controller", description: "Player whose console receives the command." },
-    { name: "GIMethod", type: "enum", typeName: "EDynamicGlobalIlluminationMethod", defaultValue: "Lumen", description: "New global illumination method." },
-  ]}
-/>
-
-<UEnum
-  name="EDynamicGlobalIlluminationMethod"
-  values={[
-    { name: "None", cvar: 0, description: "No dynamic GI." },
-    { name: "Lumen", cvar: 1, description: "Lumen global illumination." },
-    { name: "Screen Space", cvar: 2, description: "Screen space GI (SSGI), cheaper but limited to what is on screen." },
-    { name: "Plugin", cvar: 3, description: "GI provided by a third-party plugin." },
-  ]}
-/>
-
-### Get Global Illumination Method <UEVersion>UE5 only</UEVersion>
-
-<UFunction
-  name="Get Global Illumination Method"
-  target="Engine User Settings"
-  pure
-  outputs={[{ name: "Return Value", type: "enum", typeName: "EDynamicGlobalIlluminationMethod" }]}
-/>
-
-### Set Global Illumination <UEVersion tone="ue4">UE4 only</UEVersion>
-
-Enables or disables global illumination.
+Dynamic global illumination. None is the cheapest; Lumen the most expensive.
 
 <UFunction
   name="Set Global Illumination"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Enable", type: "bool", defaultValue: true },
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Method", type: "enum", typeName: "EEUSGlobalIllumination", defaultValue: "None" }]}
+/>
+
+<UEnum
+  name="EEUSGlobalIllumination"
+  values={[
+    { name: "None", description: "No dynamic GI (baked lighting only): cheapest." },
+    { name: "Screen Space (SSGI)", description: "Screen space GI: low cost, limited to what is on screen." },
+    { name: "Lumen" },
   ]}
 />
 
-### Get Global Illumination <UEVersion tone="ue4">UE4 only</UEVersion>
+### Get Global Illumination
+
+Returns the value in effect. See [Set Global Illumination](#set-global-illumination).
 
 <UFunction
   name="Get Global Illumination"
-  target="Engine User Settings"
+  target="Engine User Settings Subsystem"
   pure
-  outputs={[{ name: "Return Value", type: "bool" }]}
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EEUSGlobalIllumination" }]}
 />
 
-### Set SSGI Quality
+### Set Screen Space GIQuality
 
-Sets the screen space global illumination quality (`r.SSGI.Quality`, `0`–`4`).
+Screen space GI rays, 1 (low) .. 4 (high). Used when Global Illumination is Screen Space.
 
 <UFunction
-  name="Set SSGIQuality"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Quality", type: "int", defaultValue: 3, description: "0 disables SSGI, 4 is the highest quality." },
-  ]}
+  name="Set Screen Space GIQuality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
 />
 
-### Get SSGI Quality
+### Get Screen Space GIQuality
+
+Returns the value in effect. See [Set Screen Space GIQuality](#set-screen-space-giquality).
 
 <UFunction
-  name="Get SSGIQuality"
-  target="Engine User Settings"
+  name="Get Screen Space GIQuality"
+  target="Engine User Settings Subsystem"
   pure
   outputs={[{ name: "Return Value", type: "int" }]}
 />
 
-### Set Allow MegaLights <UEVersion tone="since">UE 5.5+</UEVersion>
+### Set Mega Lights Enabled
 
-Enables or disables MegaLights.
+MegaLights (many shadowed lights). Turning it off falls back to regular lighting.
 
 <UFunction
-  name="Set Allow Megalights"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Value", type: "bool", defaultValue: true },
-  ]}
+  name="Set Mega Lights Enabled"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
 />
 
-### Get Allow MegaLights <UEVersion tone="since">UE 5.5+</UEVersion>
+### Is Mega Lights Enabled
 
-<Callout type="info">The node is spelled <strong>Get Allow Megalighs</strong> in the plugin, so search for “Megalighs” in the Blueprint action menu.</Callout>
+Returns the value in effect. See [Set Mega Lights Enabled](#set-mega-lights-enabled).
 
 <UFunction
-  name="Get Allow Megalighs"
-  target="Engine User Settings"
+  name="Is Mega Lights Enabled"
+  target="Engine User Settings Subsystem"
   pure
   outputs={[{ name: "Return Value", type: "bool" }]}
 />
 
-## Reflections
-
-### Set Reflection Method <UEVersion>UE5 only</UEVersion>
-
-Changes the reflection method (`r.ReflectionMethod`).
+### Set Reflections
 
 <UFunction
-  name="Set Reflection Method"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Reflection Method", type: "enum", typeName: "EReflectionMethod", defaultValue: "Lumen", description: "New reflection method." },
-  ]}
+  name="Set Reflections"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Method", type: "enum", typeName: "EEUSReflections", defaultValue: "None" }]}
 />
 
 <UEnum
-  name="EReflectionMethod"
+  name="EEUSReflections"
   values={[
-    { name: "None", cvar: 0, description: "Only reflection captures and sky light." },
-    { name: "Lumen", cvar: 1, description: "Lumen reflections." },
-    { name: "Screen Space", cvar: 2, description: "Screen space reflections (SSR)." },
+    { name: "None", description: "Reflection captures / planar reflections / sky light only." },
+    { name: "Screen Space (SSR)" },
+    { name: "Lumen" },
   ]}
 />
 
-### Get Reflection Method <UEVersion>UE5 only</UEVersion>
+### Get Reflections
+
+Returns the value in effect. See [Set Reflections](#set-reflections).
 
 <UFunction
-  name="Get Reflection Method"
-  target="Engine User Settings"
+  name="Get Reflections"
+  target="Engine User Settings Subsystem"
   pure
-  outputs={[{ name: "Return Value", type: "enum", typeName: "EReflectionMethod" }]}
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EEUSReflections" }]}
 />
 
-### Set SSR Quality
+### Set Screen Space Reflection Quality
 
-Sets the screen space reflection quality (`r.SSR.Quality`, `0`–`4`).
+Screen space reflections, 0 (off) .. 4 (very high, likely too slow for real time).
 
 <UFunction
-  name="Set SSRQuality"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Quality", type: "int", defaultValue: 3, description: "0 disables SSR, 4 is the highest quality." },
-  ]}
+  name="Set Screen Space Reflection Quality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
 />
 
-### Get SSR Quality
+### Get Screen Space Reflection Quality
+
+Returns the value in effect. See [Set Screen Space Reflection Quality](#set-screen-space-reflection-quality).
 
 <UFunction
-  name="Get SSRQuality"
-  target="Engine User Settings"
+  name="Get Screen Space Reflection Quality"
+  target="Engine User Settings Subsystem"
   pure
   outputs={[{ name: "Return Value", type: "int" }]}
 />
 
-## Shadows
-
-### Set Shadow Method <UEVersion>UE5 only</UEVersion>
-
-Switches between regular shadow maps and Virtual Shadow Maps (`r.Shadow.Virtual.Enable`).
+### Set Shadow Method
 
 <UFunction
   name="Set Shadow Method"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Shadow Map Method", type: "enum", typeName: "EShadowMapMethod", defaultValue: "Virtual Shadow Maps" },
-  ]}
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Method", type: "enum", typeName: "EEUSShadowMethod", defaultValue: "Shadow Maps" }]}
 />
 
 <UEnum
-  name="EShadowMapMethod"
+  name="EEUSShadowMethod"
   values={[
-    { name: "Shadow Maps", cvar: 0, description: "Classic cascaded shadow maps." },
-    { name: "Virtual Shadow Maps", cvar: 1, description: "High resolution shadows designed for Nanite. Requires SM6." },
+    { name: "Shadow Maps", description: "Classic cascaded shadow maps: cheaper, best for SM5 GPUs." },
+    { name: "Virtual Shadow Maps" },
   ]}
 />
 
-### Get Shadow Method <UEVersion>UE5 only</UEVersion>
+### Get Shadow Method
+
+Returns the value in effect. See [Set Shadow Method](#set-shadow-method).
 
 <UFunction
   name="Get Shadow Method"
-  target="Engine User Settings"
+  target="Engine User Settings Subsystem"
   pure
-  outputs={[{ name: "Return Value", type: "enum", typeName: "EShadowMapMethod" }]}
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EEUSShadowMethod" }]}
 />
 
-## Anti-aliasing
+### Set MSAASample Count
 
-### Set Antialiasing Method
-
-Changes the desktop anti-aliasing method (`r.AntiAliasingMethod`).
+MSAA samples, used when the upscaler is MSAA (Forward Shading only).
 
 <UFunction
-  name="Set Antialiasing Method"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Antialiasing Method", type: "enum", typeName: "EAntiAliasingMethod", defaultValue: "TSR" },
-  ]}
+  name="Set MSAASample Count"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Samples", type: "enum", typeName: "EEUSMSAASamples", defaultValue: "Off" }]}
 />
 
 <UEnum
-  name="EAntiAliasingMethod"
+  name="EEUSMSAASamples"
   values={[
-    { name: "None", cvar: 0 },
-    { name: "FXAA", cvar: 1, description: "Fast Approximate Anti-Aliasing." },
-    { name: "Temporal AA", cvar: 2, description: "Temporal Anti-Aliasing." },
-    { name: "MSAA", cvar: 3, description: "Multisample Anti-Aliasing, forward renderer only. See Set MSAA Quality." },
-    { name: "TSR", cvar: 4, description: "Temporal Super Resolution (UE5)." },
+    { name: "Off" },
+    { name: "2x" },
+    { name: "4x" },
+    { name: "8x" },
   ]}
 />
 
-### Get Antialiasing Method
+### Get MSAASample Count
+
+Returns the value in effect. See [Set MSAASample Count](#set-msaasample-count).
 
 <UFunction
-  name="Get Antialiasing Method"
-  target="Engine User Settings"
+  name="Get MSAASample Count"
+  target="Engine User Settings Subsystem"
   pure
-  outputs={[{ name: "Return Value", type: "enum", typeName: "EAntiAliasingMethod" }]}
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EEUSMSAASamples" }]}
 />
 
-### Set Mobile Antialiasing Method
+### Set Ambient Occlusion Quality
 
-Changes the anti-aliasing method used by the mobile renderer / Performance Mode (`r.Mobile.AntiAliasing`).
+Ambient occlusion, 0 (off) .. 3 (high).
 
 <UFunction
-  name="Set Mobile Antialiasing Method"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Antialiasing Method", type: "enum", typeName: "EMobileAntiAliasingMethod", defaultValue: "FXAA" },
-  ]}
+  name="Set Ambient Occlusion Quality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
 />
 
-<UEnum
-  name="EMobileAntiAliasingMethod"
-  values={[
-    { name: "None", cvar: 0 },
-    { name: "FXAA", cvar: 1 },
-    { name: "Temporal AA", cvar: 2 },
-    { name: "MSAA", cvar: 3 },
-  ]}
-/>
+### Get Ambient Occlusion Quality
 
-### Get Mobile Antialiasing Method
+Returns the value in effect. See [Set Ambient Occlusion Quality](#set-ambient-occlusion-quality).
 
 <UFunction
-  name="Get Mobile Antialiasing Method"
-  target="Engine User Settings"
+  name="Get Ambient Occlusion Quality"
+  target="Engine User Settings Subsystem"
   pure
-  outputs={[{ name: "Return Value", type: "enum", typeName: "EMobileAntiAliasingMethod" }]}
-/>
-
-### Set MSAA Quality
-
-Sets the MSAA sample count (`r.MSAACount`).
-
-<UFunction
-  name="Set MSAAQuality"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "MSAAQuality", type: "enum", typeName: "ECompositingSampleCount", defaultValue: "Four" },
-  ]}
-/>
-
-<UEnum
-  name="ECompositingSampleCount"
-  values={[
-    { name: "One", cvar: 1, description: "No MSAA." },
-    { name: "Two", cvar: 2 },
-    { name: "Four", cvar: 4 },
-    { name: "Eight", cvar: 8 },
-  ]}
-/>
-
-### Get MSAA Quality
-
-<UFunction
-  name="Get MSAAQuality"
-  target="Engine User Settings"
-  pure
-  outputs={[{ name: "Return Value", type: "enum", typeName: "ECompositingSampleCount" }]}
-/>
-
-## Post-processing
-
-### Set Ambient Occlusion
-
-Enables or disables ambient occlusion (`r.DefaultFeature.AmbientOcclusion`, `r.AmbientOcclusionLevels`).
-
-<UFunction
-  name="Set Ambient Occlusion"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Enable", type: "bool", defaultValue: true },
-  ]}
-/>
-
-### Get Ambient Occlusion
-
-<UFunction
-  name="Get Ambient Occlusion"
-  target="Engine User Settings"
-  pure
-  outputs={[{ name: "Return Value", type: "bool" }]}
+  outputs={[{ name: "Return Value", type: "int" }]}
 />
 
 ### Set Bloom Quality
 
-Sets the bloom quality (`r.BloomQuality`, `0`–`5`). `0` disables bloom.
+Bloom, 0 (off) .. 5 (best).
 
 <UFunction
   name="Set Bloom Quality"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Quality", type: "int", defaultValue: 5 },
-  ]}
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
 />
 
 ### Get Bloom Quality
 
+Returns the value in effect. See [Set Bloom Quality](#set-bloom-quality).
+
 <UFunction
   name="Get Bloom Quality"
-  target="Engine User Settings"
-  pure
-  outputs={[{ name: "Return Value", type: "int" }]}
-/>
-
-### Set Lens Flare Quality
-
-Sets the lens flare quality (`r.LensFlareQuality`, `0`–`3`). `0` disables lens flares.
-
-<UFunction
-  name="Set Lens Flare Quality"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Quality", type: "int", defaultValue: 2 },
-  ]}
-/>
-
-### Get Lens Flare Quality
-
-<UFunction
-  name="Get Lens Flare Quality"
-  target="Engine User Settings"
+  target="Engine User Settings Subsystem"
   pure
   outputs={[{ name: "Return Value", type: "int" }]}
 />
 
 ### Set Motion Blur Quality
 
-Sets the motion blur quality (`r.MotionBlurQuality`, `0`–`4`). `0` disables motion blur.
+Motion blur, 0 (off) .. 4 (very high).
 
 <UFunction
   name="Set Motion Blur Quality"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Quality", type: "int", defaultValue: 4 },
-  ]}
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
 />
 
 ### Get Motion Blur Quality
 
+Returns the value in effect. See [Set Motion Blur Quality](#set-motion-blur-quality).
+
 <UFunction
   name="Get Motion Blur Quality"
-  target="Engine User Settings"
+  target="Engine User Settings Subsystem"
   pure
   outputs={[{ name: "Return Value", type: "int" }]}
 />
 
-## Geometry
+### Set Lens Flare Quality
 
-### Set Use Nanite <UEVersion>UE5 only</UEVersion>
-
-Enables or disables Nanite (`r.Nanite`). Nanite requires SM6.
+Lens flares, 0 (off) .. 3 (very high).
 
 <UFunction
-  name="Set Use Nanite"
-  target="Engine User Settings"
-  inputs={[
-    { name: "Controller", type: "object" },
-    { name: "Enable", type: "bool", defaultValue: true },
+  name="Set Lens Flare Quality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Lens Flare Quality
+
+Returns the value in effect. See [Set Lens Flare Quality](#set-lens-flare-quality).
+
+<UFunction
+  name="Get Lens Flare Quality"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Nanite Enabled
+
+Nanite. Off renders the fallback meshes (useful on weak GPUs).
+
+<UFunction
+  name="Set Nanite Enabled"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Nanite Enabled
+
+Returns the value in effect. See [Set Nanite Enabled](#set-nanite-enabled).
+
+<UFunction
+  name="Is Nanite Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+## Mobile
+
+### Set Mobile Anti Aliasing
+
+<UFunction
+  name="Set Mobile Anti Aliasing"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Method", type: "enum", typeName: "EEUSMobileAntiAliasing", defaultValue: "None" }]}
+/>
+
+<UEnum
+  name="EEUSMobileAntiAliasing"
+  values={[
+    { name: "None" },
+    { name: "FXAA" },
+    { name: "TAA" },
+    { name: "MSAA" },
+    { name: "TSR", description: "Falls back to TAA when the device does not support it." },
+    { name: "SMAA" },
   ]}
 />
 
-### Get Use Nanite <UEVersion>UE5 only</UEVersion>
+### Get Mobile Anti Aliasing
+
+Returns the value in effect. See [Set Mobile Anti Aliasing](#set-mobile-anti-aliasing).
 
 <UFunction
-  name="Get Use Nanite"
-  target="Engine User Settings"
+  name="Get Mobile Anti Aliasing"
+  target="Engine User Settings Subsystem"
   pure
-  outputs={[{ name: "Return Value", type: "bool" }]}
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EEUSMobileAntiAliasing" }]}
 />

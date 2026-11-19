@@ -4,9 +4,9 @@ import {
 	ArrowRightIcon,
 	BookOpenIcon,
 	CpuIcon,
-	LayersIcon,
+	GaugeIcon,
 	MessageCircleIcon,
-	SaveIcon,
+	MonitorIcon,
 	ShoppingBagIcon,
 	SparklesIcon,
 	SunIcon,
@@ -42,56 +42,55 @@ const features: {
 	hash?: string;
 }[] = [
 	{
-		icon: <CpuIcon />,
-		title: "Graphics API",
+		icon: <MonitorIcon />,
+		title: "Upscaling & resolution",
 		description:
-			"Let players pick DirectX 12, DirectX 11 or Vulkan and apply it on the next launch.",
-		splat: "Nodes/rhi",
-	},
-	{
-		icon: <LayersIcon />,
-		title: "Shader model",
-		description:
-			"Switch between SM6, SM5 and Performance Mode, validated against the hardware.",
-		splat: "Nodes/shader-model",
+			"TSR, DLSS, FSR, XeSS, TAA or MSAA, internal resolution presets and dynamic resolution.",
+		splat: "Nodes/upscaling",
 	},
 	{
 		icon: <SunIcon />,
 		title: "Lighting & shadows",
 		description:
-			"Lumen, SSGI, reflections, Virtual Shadow Maps, MegaLights and Nanite at runtime.",
+			"Lumen, SSGI, reflections, Virtual Shadow Maps, MegaLights, Nanite and shadow quality.",
 		splat: "Nodes/render",
 	},
 	{
 		icon: <SparklesIcon />,
-		title: "Anti-aliasing & post FX",
+		title: "Post FX, effects & LOD",
 		description:
-			"TSR, TAA, FXAA, MSAA, ambient occlusion, bloom, lens flares and motion blur.",
-		splat: "Nodes/render",
-		hash: "anti-aliasing",
+			"Volumetric fog, depth of field, bloom, Niagara quality, view distance and mesh LODs.",
+		splat: "Nodes/post-processing",
+	},
+	{
+		icon: <GaugeIcon />,
+		title: "Presets & Auto Configure",
+		description:
+			"Performance → Ultra presets, named profiles and settings picked from the player's GPU.",
+		splat: "Nodes/presets",
+	},
+	{
+		icon: <CpuIcon />,
+		title: "Graphics API & shader model",
+		description:
+			"DirectX 12, DirectX 11 or Vulkan and SM6, SM5 or Performance Mode, validated against the GPU.",
+		splat: "Nodes/rhi",
 	},
 	{
 		icon: <ZapIcon />,
-		title: "Shader pre-compilation",
+		title: "Shader & PSO pre-compilation",
 		description:
-			"Compile material and Niagara shaders in a loading screen to stop hitches.",
+			"Warm up materials, Niagara and PSOs behind a loading screen to stop hitches.",
 		splat: "Nodes/shader-compiler",
-	},
-	{
-		icon: <SaveIcon />,
-		title: "Saved automatically",
-		description:
-			"Choices are stored in GameUserSettings.ini and restored when the game starts.",
-		splat: "issues",
-		hash: "my-settings-are-not-restored-on-startup",
 	},
 ];
 
 const releaseHighlights = [
-	"Unreal Engine 5.8 support",
-	"Performance Mode on DirectX 12",
-	"Safer settings restore through console variables",
-	"Get Preferred Feature Level fixed",
+	"Everything in one Engine User Settings Subsystem",
+	"Upscalers: TSR, DLSS, FSR, XeSS + dynamic resolution",
+	"Shadows, Lumen, post FX, LOD and NVIDIA Reflex",
+	"Presets, profiles and Auto Configure",
+	"Example map with a full settings menu",
 ];
 
 function Home() {
@@ -199,45 +198,49 @@ function HeroGraph() {
 	return (
 		<div
 			role="img"
-			aria-label="Blueprint nodes Set Preferred RHI and Set Global Illumination Method"
+			aria-label="Blueprint nodes Set Upscaler, Set Global Illumination and Apply Graphics Preset"
 			className="relative rounded-2xl border border-white/10 bg-[#262626] bg-[linear-gradient(rgba(0,0,0,0.35)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.35)_1px,transparent_1px),linear-gradient(rgba(0,0,0,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.18)_1px,transparent_1px)] bg-[size:128px_128px,128px_128px,16px_16px,16px_16px] p-6 shadow-2xl"
 		>
 			<div className="flex flex-col gap-6">
 				<BlueprintNode
 					kind="function"
-					title="Set Preferred RHI"
-					subtitle="Target is Engine User Settings BPLibrary"
+					title="Set Upscaler"
+					subtitle="Target is Engine User Settings Subsystem"
 					icon={<FunctionGlyph />}
 					inputs={[
 						{ type: "exec" },
+						{ name: "Target", type: "object" },
 						{
-							name: "Graphics RHI",
+							name: "Upscaler",
 							type: "enum",
-							defaultValue: "DirectX 12",
+							defaultValue: "TSR (Temporal Super Resolution)",
 						},
 					]}
-					outputs={[{ type: "exec" }]}
+					outputs={[{ type: "exec" }, { name: "Return Value", type: "bool" }]}
 				/>
 				<div className="self-end">
 					<BlueprintNode
 						kind="function"
-						title="Set Global Illumination Method"
-						subtitle="Target is Engine User Settings"
+						title="Set Global Illumination"
+						subtitle="Target is Engine User Settings Subsystem"
 						icon={<FunctionGlyph />}
 						inputs={[
 							{ type: "exec" },
-							{ name: "Controller", type: "object" },
-							{ name: "GIMethod", type: "enum", defaultValue: "Lumen" },
+							{ name: "Method", type: "enum", defaultValue: "Lumen" },
 						]}
 						outputs={[{ type: "exec" }]}
 					/>
 				</div>
 				<BlueprintNode
-					kind="pure"
-					title="Get Max Feature Level"
-					subtitle="Target is Engine User Settings BPLibrary"
-					icon={<FunctionGlyph pure />}
-					outputs={[{ name: "Return Value", type: "enum" }]}
+					kind="function"
+					title="Apply Graphics Preset"
+					subtitle="Target is Engine User Settings Subsystem"
+					icon={<FunctionGlyph />}
+					inputs={[
+						{ type: "exec" },
+						{ name: "Preset", type: "enum", defaultValue: "Ultra" },
+					]}
+					outputs={[{ type: "exec" }]}
 				/>
 			</div>
 		</div>

@@ -1,0 +1,93 @@
+---
+title: Textures & VRAM
+description: Anisotropic filtering, texture streaming pool and texture mip bias.
+---
+
+Anisotropic filtering and the texture pool are **subsystem** nodes (Get Game Instance Subsystem → `EngineUserSettingsSubsystem`); [Set Texture Mip Bias](#set-texture-mip-bias) is static. Lower the texture pool or raise the mip bias on GPUs with little video memory.
+
+### Set Max Anisotropy
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Anisotropic filtering: 0/1 = off, 2, 4, 8 or 16.
+
+<UFunction
+  name="Set Max Anisotropy"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Samples", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Max Anisotropy
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Returns the anisotropic filtering in use.
+
+<UFunction
+  name="Get Max Anisotropy"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Texture Pool Size
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Texture streaming pool in MB; 0 = automatic from the video memory. Lower it on GPUs with little VRAM.
+
+<UFunction
+  name="Set Texture Pool Size"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Size MB", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Texture Pool Size
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Returns the texture streaming pool size in MB (0 = automatic).
+
+<UFunction
+  name="Get Texture Pool Size"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Get Recommended Texture Pool Size
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Texture streaming pool size (MB) the plugin would pick automatically from the video memory.
+
+<UFunction
+  name="Get Recommended Texture Pool Size"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Texture Mip Bias
+
+Drops texture mips for streaming (0..4): 1 halves texture resolution and memory.
+
+<UFunction
+  name="Set Texture Mip Bias"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Bias", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Texture Mip Bias
+
+Returns the value in effect. See [Set Texture Mip Bias](#set-texture-mip-bias).
+
+<UFunction
+  name="Get Texture Mip Bias"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>

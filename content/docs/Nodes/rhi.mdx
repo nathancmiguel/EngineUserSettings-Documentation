@@ -7,43 +7,46 @@ The RHI (Render Hardware Interface) is the graphics API used by the engine. The 
 
 <Callout type="warn">The game must be restarted for a new RHI to take effect.</Callout>
 
-<UEnum
-  name="EGraphicsRHI"
-  values={[
-    { name: "DirectX 12", cvar: "dx12", description: "Required for SM6, Lumen hardware ray tracing, Nanite and Virtual Shadow Maps." },
-    { name: "DirectX 11", cvar: "dx11", description: "Widest compatibility. SM6 isn't available and falls back to SM5." },
-    { name: "Vulkan", cvar: "vulkan", description: "Cross-platform API; must be enabled in Targeted RHIs." },
-  ]}
-/>
+<Callout type="info">Since v1.4.0 the RHI getters return **Unknown / Default** when nothing is saved (project default) instead of Vulkan. Pass **Unknown / Default** to Set Preferred RHI to go back to the project's default.</Callout>
 
-## Set Preferred RHI
+### Set Preferred RHI
 
-Saves the RHI that will be used the next time the game starts. The currently preferred feature level is re-applied so it stays valid for the new RHI.
+Graphics API used at next start; Unknown returns to the project's default. Keeps the preferred feature level.
 
 <UFunction
   name="Set Preferred RHI"
-  target="Engine User Settings BPLibrary"
-  inputs={[{ name: "Graphics RHI", type: "enum", typeName: "EGraphicsRHI", defaultValue: "DirectX 12", description: "RHI to use after a restart." }]}
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Graphics RHI", type: "enum", typeName: "EGraphicsRHI", defaultValue: "DirectX 12" }]}
 />
 
-## Get Preferred RHI
+<UEnum
+  name="EGraphicsRHI"
+  values={[
+    { name: "DirectX 12" },
+    { name: "DirectX 11" },
+    { name: "Vulkan" },
+    { name: "Unknown / Default", description: "Not set (engine default) or not one of the above (e.g. Null RHI)." },
+  ]}
+/>
 
-Returns the RHI that will be used when the game is restarted. Returns **Vulkan** when nothing has been saved yet.
+### Get Current RHI
+
+Graphics API running now.
 
 <UFunction
-  name="Get Preferred RHI"
-  target="Engine User Settings BPLibrary"
+  name="Get Current RHI"
+  target="Engine User Settings Subsystem"
   pure
   outputs={[{ name: "Return Value", type: "enum", typeName: "EGraphicsRHI" }]}
 />
 
-## Get Current RHI
+### Get Preferred RHI
 
-Returns the RHI the game is running with right now (DirectX 12, DirectX 11, otherwise Vulkan).
+Saved preference; Unknown when not set (project default).
 
 <UFunction
-  name="Get Current RHI"
-  target="Engine User Settings BPLibrary"
+  name="Get Preferred RHI"
+  target="Engine User Settings Subsystem"
   pure
   outputs={[{ name: "Return Value", type: "enum", typeName: "EGraphicsRHI" }]}
 />

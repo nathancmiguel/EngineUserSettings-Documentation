@@ -2,9 +2,18 @@
   "title": "Nodes",
   "pages": [
     "finding",
+    "render",
+    "upscaling",
+    "shadows",
+    "lumen",
+    "post-processing",
+    "effects-lod",
+    "textures",
+    "performance",
+    "presets",
+    "hardware",
     "rhi",
     "shader-model",
-    "render",
     "shader-compiler",
     "utilities"
   ]

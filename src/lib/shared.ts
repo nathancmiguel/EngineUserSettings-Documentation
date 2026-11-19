@@ -9,7 +9,7 @@ export const appDescription =
  */
 export const siteUrl = (
 	import.meta.env.VITE_SITE_URL ??
-	"https://engineusersettings-documentation.vercel.app"
+	"https://engine-user-settings-documentation.vercel.app"
 ).replace(/\/$/, "");
 
 export const docsRoute = "/docs";

@@ -1,0 +1,199 @@
+---
+title: Effects & LOD
+description: Translucency resolution, Niagara quality and particle limits, view distance, mesh LODs, Nanite detail and foliage density.
+---
+
+Static nodes, applied immediately, saved and reapplied at startup. Values registered by modules that load later (Landscape, Niagara…) are applied again when the subsystem starts.
+
+## Translucency & particles
+
+### Set Translucency Resolution
+
+Resolution of separate translucency (glass, particles), 25..100 % of the screen.
+
+<UFunction
+  name="Set Translucency Resolution"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Percentage", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Translucency Resolution
+
+Returns the value in effect. See [Set Translucency Resolution](#set-translucency-resolution).
+
+<UFunction
+  name="Get Translucency Resolution"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+### Set Particle Quality
+
+Niagara quality level, 0 (low) .. 4 (cinematic): emitters disabled for a level are not spawned.
+
+<UFunction
+  name="Set Particle Quality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Particle Quality
+
+Returns the value in effect. See [Set Particle Quality](#set-particle-quality).
+
+<UFunction
+  name="Get Particle Quality"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Max Particles Per Emitter
+
+Hard limit of CPU particles per Niagara emitter (100..1000000).
+
+<UFunction
+  name="Set Max Particles Per Emitter"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Max Particles", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Max Particles Per Emitter
+
+Returns the value in effect. See [Set Max Particles Per Emitter](#set-max-particles-per-emitter).
+
+<UFunction
+  name="Get Max Particles Per Emitter"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+## Distance & LOD
+
+### Set View Distance Scale
+
+View distance multiplier (0.1..2): how far objects with a max draw distance are drawn.
+
+<UFunction
+  name="Set View Distance Scale"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Scale", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get View Distance Scale
+
+Returns the value in effect. See [Set View Distance Scale](#set-view-distance-scale).
+
+<UFunction
+  name="Get View Distance Scale"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+### Set Static Mesh LODDistance Scale
+
+Static mesh LOD distance (0.25..4): higher switches to simpler LODs earlier (2 = half the distance).
+
+<UFunction
+  name="Set Static Mesh LODDistance Scale"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Scale", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Static Mesh LODDistance Scale
+
+Returns the value in effect. See [Set Static Mesh LODDistance Scale](#set-static-mesh-loddistance-scale).
+
+<UFunction
+  name="Get Static Mesh LODDistance Scale"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+### Set Skeletal Mesh LODBias
+
+Skeletal mesh LOD bias (0..4): 1 skips the most detailed LOD.
+
+<UFunction
+  name="Set Skeletal Mesh LODBias"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Bias", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Skeletal Mesh LODBias
+
+Returns the value in effect. See [Set Skeletal Mesh LODBias](#set-skeletal-mesh-lodbias).
+
+<UFunction
+  name="Get Skeletal Mesh LODBias"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Landscape LODScale
+
+Landscape LOD distribution multiplier (0.25..4): lower keeps less detail in the distance.
+
+<UFunction
+  name="Set Landscape LODScale"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Scale", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Landscape LODScale
+
+Returns the value in effect. See [Set Landscape LODScale](#set-landscape-lodscale).
+
+<UFunction
+  name="Get Landscape LODScale"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+### Set Nanite Max Pixels Per Edge
+
+Nanite triangle size target in pixels (0.5..8, 1 = default). Higher is coarser and faster.
+
+<UFunction
+  name="Set Nanite Max Pixels Per Edge"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Pixels", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Nanite Max Pixels Per Edge
+
+Returns the value in effect. See [Set Nanite Max Pixels Per Edge](#set-nanite-max-pixels-per-edge).
+
+<UFunction
+  name="Get Nanite Max Pixels Per Edge"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+### Set Foliage Density
+
+Foliage and landscape grass density (0..1). Foliage types must opt in to density scaling.
+
+<UFunction
+  name="Set Foliage Density"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Density", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Foliage Density
+
+Returns the value in effect. See [Set Foliage Density](#set-foliage-density).
+
+<UFunction
+  name="Get Foliage Density"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>

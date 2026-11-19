@@ -19,6 +19,11 @@ description: Configure your Unreal Engine project so players can switch RHI and 
 
     Package your game with the **Shipping** build configuration. RHI and feature level changes are applied by the engine on startup, so they can't be tested inside the editor.
   </Step>
+  <Step>
+    ### Start from the example menu
+
+    Open `Content/Example/Maps/Example` (enable **Show Plugin Content** in the Content Browser). Its **Options** widget is a complete settings menu built with the plugin's nodes: copy it into your project or use it as a reference. Calling [Auto Configure](/docs/Nodes/hardware#auto-configure) on the first launch is a good starting point.
+  </Step>
 </Steps>
 
 <Callout type="warn">

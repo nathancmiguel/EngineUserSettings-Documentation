@@ -1,0 +1,82 @@
+---
+title: Presets & Profiles
+description: Built-in graphics presets, named profiles and resetting every setting to the project defaults.
+---
+
+- **Graphics presets** clear the player's individual overrides, set the engine scalability level (Performance = Low … Ultra = Epic) and pick TSR with a matching internal resolution. Performance also turns volumetric fog off and lowers shadow maps to 1024.
+- **Profiles** store the player's overrides, the engine scalability levels and the internal resolution under a name, in `[EngineUserSettings.Profile.<Name>]` of `GameUserSettings.ini`.
+- **Reset To Defaults** removes only the plugin's overrides, so the project, scalability and device profile values come back.
+
+### Apply Graphics Preset
+
+Applies a built-in preset: clears the player's individual overrides, sets the engine scalability level and picks an upscaler and internal resolution to match. Saved.
+
+<UFunction
+  name="Apply Graphics Preset"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Preset", type: "enum", typeName: "EEUSGraphicsPreset", defaultValue: "Performance" }]}
+/>
+
+<UEnum
+  name="EEUSGraphicsPreset"
+  values={[
+    { name: "Performance", description: "Lowest settings: for weak or integrated GPUs and laptops on battery." },
+    { name: "Balanced" },
+    { name: "Quality" },
+    { name: "Ultra", description: "Everything at its highest (Epic scalability, native resolution)." },
+  ]}
+/>
+
+### Save Profile
+
+Saves every setting of this plugin plus the engine scalability levels under ProfileName (letters, digits, space, - and _).
+
+<UFunction
+  name="Save Profile"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Profile Name", type: "string" }]}
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Load Profile
+
+Applies and saves a profile created with SaveProfile. Returns false when it does not exist.
+
+<UFunction
+  name="Load Profile"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Profile Name", type: "string" }]}
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Delete Profile
+
+Deletes a profile saved with Save Profile. Returns false when it does not exist.
+
+<UFunction
+  name="Delete Profile"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Profile Name", type: "string" }]}
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Get Profile Names
+
+Names of every profile saved with Save Profile.
+
+<UFunction
+  name="Get Profile Names"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", container: "array", type: "string" }]}
+/>
+
+### Reset To Defaults
+
+Removes every override of this plugin (the project, scalability and device profile values come back) and its saved values. bIncludeEngineSettings also resets UGameUserSettings (resolution, scalability, frame limit...).
+
+<UFunction
+  name="Reset To Defaults"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Include Engine Settings", type: "bool", defaultValue: false }]}
+/>

@@ -1,0 +1,132 @@
+---
+title: Shadows
+description: Shadow map resolution, shadow distance, cascades, contact shadows and Virtual Shadow Map settings.
+---
+
+Static nodes, applied immediately, saved and reapplied at startup. Use [Set Shadow Method](/docs/Nodes/render#set-shadow-method) to switch between shadow maps and Virtual Shadow Maps.
+
+### Set Shadow Resolution
+
+Maximum shadow map size in texels (128..8192), for regular and cascaded shadow maps. 1024 is a good low setting.
+
+<UFunction
+  name="Set Shadow Resolution"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Max Resolution", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Shadow Resolution
+
+Returns the value in effect. See [Set Shadow Resolution](#set-shadow-resolution).
+
+<UFunction
+  name="Get Shadow Resolution"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Shadow Distance Scale
+
+Directional light shadow distance multiplier (0.1..2, 1 = project default). Lower is faster.
+
+<UFunction
+  name="Set Shadow Distance Scale"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Scale", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Shadow Distance Scale
+
+Returns the value in effect. See [Set Shadow Distance Scale](#set-shadow-distance-scale).
+
+<UFunction
+  name="Get Shadow Distance Scale"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+### Set Shadow Cascades
+
+Cascaded shadow map cascades for the directional light (1..10). Each cascade re-renders the scene.
+
+<UFunction
+  name="Set Shadow Cascades"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Cascades", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Shadow Cascades
+
+Returns the value in effect. See [Set Shadow Cascades](#set-shadow-cascades).
+
+<UFunction
+  name="Get Shadow Cascades"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Contact Shadows Enabled
+
+Screen space contact shadows (small detail shadows).
+
+<UFunction
+  name="Set Contact Shadows Enabled"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Contact Shadows Enabled
+
+Returns the value in effect. See [Set Contact Shadows Enabled](#set-contact-shadows-enabled).
+
+<UFunction
+  name="Is Contact Shadows Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Set Virtual Shadow Map Resolution Bias
+
+Virtual shadow map resolution bias (-2..4): 0 = full resolution, 1 = half, 2 = quarter; negative is sharper and slower. Applied to directional and local lights.
+
+<UFunction
+  name="Set Virtual Shadow Map Resolution Bias"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Bias", type: "float", defaultValue: "0.0" }]}
+/>
+
+### Get Virtual Shadow Map Resolution Bias
+
+Returns the value in effect. See [Set Virtual Shadow Map Resolution Bias](#set-virtual-shadow-map-resolution-bias).
+
+<UFunction
+  name="Get Virtual Shadow Map Resolution Bias"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "float" }]}
+/>
+
+### Set Virtual Shadow Map Cache Enabled
+
+Virtual shadow map page caching (reuses static shadows between frames). Keep it on unless debugging.
+
+<UFunction
+  name="Set Virtual Shadow Map Cache Enabled"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Virtual Shadow Map Cache Enabled
+
+Returns the value in effect. See [Set Virtual Shadow Map Cache Enabled](#set-virtual-shadow-map-cache-enabled).
+
+<UFunction
+  name="Is Virtual Shadow Map Cache Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>

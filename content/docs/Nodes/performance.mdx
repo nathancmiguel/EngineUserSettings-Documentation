@@ -1,0 +1,171 @@
+---
+title: CPU, Latency & Background
+description: Animation and physics CPU settings, low latency mode, NVIDIA Reflex and background frame rate limiting.
+---
+
+Static nodes, except the background settings which belong to the subsystem.
+
+<Callout type="info">NVIDIA Reflex is used through the engine's modular features: the plugin doesn't depend on the Reflex plugin, but Reflex is only available when that plugin is enabled and the GPU supports it. Check [Is Reflex Available](#is-reflex-available).</Callout>
+
+## Animation & physics
+
+### Set Animation Rate Optimization
+
+Update rate optimization: distant skeletal meshes animate at a lower rate.
+
+<UFunction
+  name="Set Animation Rate Optimization"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Animation Rate Optimization Enabled
+
+<UFunction
+  name="Is Animation Rate Optimization Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Set Parallel Animation
+
+Animation update and evaluation on worker threads.
+
+<UFunction
+  name="Set Parallel Animation"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Parallel Animation Enabled
+
+<UFunction
+  name="Is Parallel Animation Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Set Physics Substepping
+
+Physics substepping (stabler physics at low frame rates, more CPU), up to MaxSubsteps (1..16) per frame.
+
+<UFunction
+  name="Set Physics Substepping"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }, { name: "Max Substeps", type: "int", defaultValue: 6 }]}
+/>
+
+### Is Physics Substepping Enabled
+
+Whether physics substepping is enabled.
+
+<UFunction
+  name="Is Physics Substepping Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+## Latency
+
+### Set Low Latency Mode
+
+Low input latency: the game thread waits for the GPU (`r.GTSyncType` 1) and the render thread may not lag one frame behind. Lower latency, slightly lower frame rate.
+
+<UFunction
+  name="Set Low Latency Mode"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Low Latency Mode Enabled
+
+<UFunction
+  name="Is Low Latency Mode Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Is Reflex Available
+
+NVIDIA Reflex is available (Reflex plugin enabled and supported GPU).
+
+<UFunction
+  name="Is Reflex Available"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Set Reflex Mode
+
+NVIDIA Reflex mode; returns false when Reflex is not available. Saved and reapplied at startup.
+
+<UFunction
+  name="Set Reflex Mode"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Mode", type: "enum", typeName: "EEUSReflexMode", defaultValue: "Off" }]}
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+<UEnum
+  name="EEUSReflexMode"
+  values={[
+    { name: "Off" },
+    { name: "On" },
+    { name: "On + Boost" },
+  ]}
+/>
+
+### Get Reflex Mode
+
+Returns the NVIDIA Reflex mode in use.
+
+<UFunction
+  name="Get Reflex Mode"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "enum", typeName: "EEUSReflexMode" }]}
+/>
+
+## Background
+
+### Set Background Settings
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Lower frame rate (and optionally volume) while the window is unfocused or minimized.
+
+<UFunction
+  name="Set Background Settings"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Settings", type: "struct", typeName: "FEUSBackgroundSettings" }]}
+/>
+
+<UStruct
+  name="FEUSBackgroundSettings"
+  description="Saves GPU/CPU (and battery) while the game window is not in front."
+  fields={[
+    { name: "Enabled", type: "bool", defaultValue: "false" },
+    { name: "Unfocused Fps", type: "int", defaultValue: "30", range: "5 – 120", description: "Frame rate limit while the window is visible but not focused." },
+    { name: "Minimized Fps", type: "int", defaultValue: "5", range: "1 – 60", description: "Frame rate limit while the window is minimized." },
+    { name: "Unfocused Volume", type: "float", defaultValue: "-1.0", range: "… – 1", description: "Audio volume while unfocused (0..1); negative keeps the project's setting." },
+  ]}
+/>
+
+### Get Background Settings
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Returns the background throttling settings.
+
+<UFunction
+  name="Get Background Settings"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "struct", typeName: "FEUSBackgroundSettings" }]}
+/>

@@ -1,57 +1,22 @@
 ---
 title: Utilities
-description: Write values to GameUserSettings.ini and list the materials and Niagara systems of your project.
+description: Write values to GameUserSettings.ini.
 ---
 
-## Set Game User Settings Ini Value
+Use this node to persist your own settings, or any value the plugin doesn't save for you. The file is flushed to disk **without** being removed from the config cache, so `UGameUserSettings` keeps working with the same values.
 
-Writes a value to `GameUserSettings.ini` and saves the file. Use it to persist your own settings, or render settings on platforms where the plugin doesn't save them for you.
+<Callout type="info">Renamed from *Set Game User Settings Ini Value* in v1.4.0. Existing Blueprints are redirected automatically.</Callout>
 
-Since v1.1.4 the file is flushed to disk **without** being removed from the config cache, so `UGameUserSettings` keeps working with the same values.
+### Set User Settings Ini Value
+
+Writes Key=Value in Section of `GameUserSettings.ini` and saves the file.
 
 <UFunction
-  name="Set Game User Settings Ini Value"
-  target="Engine User Settings BPLibrary"
-  inputs={[
-    { name: "Section", type: "string", defaultValue: "/Script/Engine.RendererSettings", description: "Ini section, without brackets." },
-    { name: "Key", type: "string", description: "Key inside the section, e.g. a console variable name." },
-    { name: "Value", type: "string", description: "Value to save." },
-  ]}
+  name="Set User Settings Ini Value"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Section", type: "string" }, { name: "Key", type: "string" }, { name: "Value", type: "string" }]}
 />
 
 <Callout type="info">
-  Keys saved in `[/Script/Engine.RendererSettings]` that match one of the plugin's console variables are applied automatically on the next startup.
+  Keys saved in `[/Script/Engine.RendererSettings]` that match one of the plugin's console variables are clamped and applied automatically on the next startup.
 </Callout>
-
-## Get Materials
-
-Returns a soft reference to every material in the asset registry. Used by the [shader compiler](/docs/Nodes/shader-compiler).
-
-<UFunction
-  name="Get Materials"
-  target="Engine User Settings BPLibrary"
-  pure
-  outputs={[{ name: "Return Value", type: "softobject", container: "array", typeName: "Material", description: "Every material asset of the project." }]}
-/>
-
-## Get Niagara Materials
-
-Returns a soft reference to every Niagara system in the asset registry.
-
-<UFunction
-  name="Get Niagara Materials"
-  target="Engine User Settings BPLibrary"
-  pure
-  outputs={[{ name: "Return Value", type: "softobject", container: "array", typeName: "Niagara System", description: "Every Niagara system asset of the project." }]}
-/>
-
-## Is Shader Compiling
-
-Returns `true` while the editor is compiling shaders. Always returns `false` in packaged builds. <UEVersion tone="editor">Editor only</UEVersion>
-
-<UFunction
-  name="Is Shader Compiling"
-  target="Engine User Settings BPLibrary"
-  pure
-  outputs={[{ name: "Return Value", type: "bool" }]}
-/>

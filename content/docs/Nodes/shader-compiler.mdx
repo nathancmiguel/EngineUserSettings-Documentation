@@ -1,11 +1,14 @@
 ---
 title: Shader Compiler
-description: Pre-compile material and Niagara shaders in game to remove shader compilation stutter.
+description: Pre-compile material, Niagara and PSO shaders in game to remove shader compilation stutter.
 ---
 
-Unreal Engine can hitch while shaders are compiled the first time a material or Niagara system is rendered. `ABP_ShadersCompiler` loads every material and Niagara system of the project ahead of time (for example in a loading screen or main menu), so the shaders are ready before gameplay starts.
+Unreal Engine can hitch while shaders are compiled the first time a material or Niagara system is rendered. The plugin gives you two tools:
 
-## How to use
+- **`ABP_ShadersCompiler`** loads every material and Niagara system of the project ahead of time, e.g. in a loading screen or main menu.
+- **PSO precompilation nodes** report and speed up the compilation of the bundled PSO cache and PSO precaching in packaged games.
+
+## ABP_ShadersCompiler
 
 <Steps>
   <Step>
@@ -27,7 +30,7 @@ Unreal Engine can hitch while shaders are compiled the first time a material or 
   <source src="/video/Shaders.mp4" type="video/mp4" />
 </video>
 
-## Variables
+### Variables
 
 Use these variables to display progress, e.g. `Materials Count / Materials Length`.
 
@@ -37,10 +40,10 @@ Use these variables to display progress, e.g. `Materials Count / Materials Lengt
     { name: "Materials Length", type: "int", description: "Total number of materials to compile." },
     { name: "Niagara Count", type: "int", description: "Number of Niagara systems compiled." },
     { name: "Niagara Length", type: "int", description: "Total number of Niagara systems to compile." },
+    { name: "Shaders Count", type: "int", description: "Number of shaders compiled so far (materials + Niagara)." },
+    { name: "Shaders Length", type: "int", description: "Total number of shaders to compile." },
   ]}
 />
-
-## Functions
 
 ### Start
 
@@ -61,8 +64,6 @@ Stops the shader compilation.
   target="ABP Shaders Compiler"
   inputs={[{ name: "Target", type: "object" }]}
 />
-
-## Events
 
 ### On Started
 
@@ -85,3 +86,89 @@ Called every time a shader has been compiled.
 Called when every shader has been compiled.
 
 <UEvent name="On Finish" bind />
+
+## PSO precompilation & shader nodes
+
+### Get Shader Precompile Progress
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+PSOs still compiling (bundled PSO cache + PSO precaching). Works in packaged games.
+
+<UFunction
+  name="Get Shader Precompile Progress"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "struct", typeName: "FEUSShaderPrecompileProgress" }]}
+/>
+
+<UStruct
+  name="FEUSShaderPrecompileProgress"
+  fields={[
+    { name: "Remaining", type: "int", defaultValue: "0", description: "PSOs still to compile (bundled PSO cache + PSO precaching)." },
+    { name: "In Progress", type: "bool", defaultValue: "false" },
+  ]}
+/>
+
+### Set Shader Precompile Mode
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Fast/Precompile while a loading or "preparing shaders" screen is visible, Background while playing.
+
+<UFunction
+  name="Set Shader Precompile Mode"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Mode", type: "enum", typeName: "EEUSShaderPrecompileMode", defaultValue: "Background" }]}
+/>
+
+<UEnum
+  name="EEUSShaderPrecompileMode"
+  values={[
+    { name: "Background", description: "Small batches: compiles while playing with minimal hitches." },
+    { name: "Fast", description: "Larger batches: use while a loading screen is shown." },
+    { name: "Precompile", description: "Everything as fast as possible: use behind a \"preparing shaders\" screen." },
+  ]}
+/>
+
+### Get All Materials
+
+Every material asset in the project (asset registry), e.g. to warm up shaders on a loading screen.
+
+<UFunction
+  name="Get All Materials"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", container: "array", type: "softobject", typeName: "Material" }]}
+/>
+
+### Get All Niagara Systems
+
+Every Niagara system asset in the project (asset registry).
+
+<UFunction
+  name="Get All Niagara Systems"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", container: "array", type: "softobject", typeName: "Niagara System" }]}
+/>
+
+### Are Shaders Compiling
+
+Shaders (editor) or PSOs (packaged game: bundled PSO cache + PSO precaching) are still compiling.
+
+<UFunction
+  name="Are Shaders Compiling"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### On Shaders Ready
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Event dispatcher of the subsystem, fired once all pending PSO compilation finished (after some was pending). Bind to it from your loading screen and switch to [Set Shader Precompile Mode](#set-shader-precompile-mode) **Background** when it fires.
+
+<UEvent name="On Shaders Ready" bind />

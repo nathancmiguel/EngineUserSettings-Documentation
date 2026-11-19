@@ -5,7 +5,7 @@ description: Answers to common questions about platforms, dedicated servers and 
 
 ## Support for other platforms
 
-The plugin officially targets **Windows (Win64)**; since v1.1.4 Win32 is no longer listed in the plugin descriptor. The nodes in the [Render](/docs/Nodes/render) section only change console variables, so they can work on Linux, macOS, consoles and mobile, but you will probably need to save the values yourself (see [Set Game User Settings Ini Value](/docs/Nodes/utilities#set-game-user-settings-ini-value)).
+The plugin officially targets **Windows (Win64)**. Most nodes only change console variables, so they can work on Linux, macOS, consoles and mobile, but this hasn't been tested. Use [Set User Settings Ini Value](/docs/Nodes/utilities#set-user-settings-ini-value) to save extra values yourself.
 
 ## Packaging a dedicated server
 
@@ -25,14 +25,26 @@ If packaging a dedicated server fails because of the plugin, change the module's
 
 ## My settings are not restored on startup
 
-Rendering settings are saved in the `[/Script/Engine.RendererSettings]` section of `GameUserSettings.ini` and re-applied when the module starts. Since v1.1.4 they are applied with `IConsoleVariable::Set` at the **SetByCode** priority:
+Console variables are saved in `[/Script/Engine.RendererSettings]` and the plugin's own settings in `[/Script/EngineUserSettings.EngineUserSettingsConfig]` of `GameUserSettings.ini`. They're reapplied when the module starts, and again when the subsystem starts for settings registered by modules that load later (Landscape, Niagara…). Values are applied at the **SetByCode** priority:
 
 - the player's saved value wins over project and scalability settings;
 - a value typed in the console can still override it;
-- unknown console variables (for example a UE5-only setting in a UE4 build) are ignored instead of producing errors.
+- saved values are **clamped to a safe range**, and non-numeric or unknown values are ignored.
 
 If a value still isn't restored, check that the key is present in `Saved/Config/Windows/GameUserSettings.ini` of your packaged game.
 
+## MegaLights turns back on after a restart
+
+Fixed in v1.4.0: older versions saved `r.MegaLights.Allowed` but restored a different name, so the setting was lost on restart. Update the plugin.
+
+## I picked SM6 but the game starts in DirectX 11
+
+The engine falls back from DirectX 12 to DirectX 11 when the GPU can't run Shader Model 6. Since v1.4.0, [Set Preferred Feature Level](/docs/Nodes/shader-model#set-preferred-feature-level) refuses SM6 on those GPUs (it saves SM5 and returns `false`). Use [Is Feature Level Supported](/docs/Nodes/shader-model#is-feature-level-supported) to hide unsupported options.
+
+## DLSS, FSR or XeSS aren't listed
+
+[Get Available Upscalers](/docs/Nodes/upscaling#get-available-upscalers) only lists vendor upscalers whose plugin is enabled in the project. Install and enable the NVIDIA DLSS, AMD FSR or Intel XeSS plugin.
+
 ## Get Current Feature Level returns the wrong value in menus
 
-There is no play world in the main menu, in the editor outside PIE or during map travel. Since v1.1.4, [Get Current Feature Level](/docs/Nodes/shader-model#get-current-feature-level) falls back to the maximum feature level supported by the hardware in those cases instead of crashing.
+There is no play world in the main menu, in the editor outside PIE or during map travel. [Get Current Feature Level](/docs/Nodes/shader-model#get-current-feature-level) falls back to the feature level of the RHI in those cases instead of crashing.

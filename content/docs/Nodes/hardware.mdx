@@ -1,0 +1,63 @@
+---
+title: Hardware & Auto Configure
+description: Read the player's GPU, CPU, memory and battery, and pick settings for their machine automatically.
+---
+
+These nodes belong to the **Engine User Settings Subsystem** (Get Game Instance Subsystem → `EngineUserSettingsSubsystem`). Call [Auto Configure](#auto-configure) on the first launch to start from settings that fit the player's machine.
+
+### Get Hardware Info
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Information about the player's machine: GPU, driver, video and system memory, CPU, Shader Model 6 and ray tracing support, battery, current RHI and feature level.
+
+<UFunction
+  name="Get Hardware Info"
+  target="Engine User Settings Subsystem"
+  pure
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }]}
+  outputs={[{ name: "Return Value", type: "struct", typeName: "FEUSHardwareInfo" }]}
+/>
+
+<UStruct
+  name="FEUSHardwareInfo"
+  fields={[
+    { name: "GPUName", type: "string" },
+    { name: "GPUDriver Version", type: "string" },
+    { name: "Video Memory MB", type: "int", defaultValue: "0", description: "Dedicated video memory in MB (0 when the RHI does not report it)." },
+    { name: "System Memory MB", type: "int", defaultValue: "0" },
+    { name: "CPUBrand", type: "string" },
+    { name: "CPUPhysical Cores", type: "int", defaultValue: "0" },
+    { name: "CPULogical Cores", type: "int", defaultValue: "0" },
+    { name: "Integrated GPU", type: "bool", defaultValue: "false" },
+    { name: "Supports SM6", type: "bool", defaultValue: "false", description: "D3D12 with Shader Model 6 (Nanite, Lumen HWRT, VSM at their best) is supported by this GPU." },
+    { name: "Ray Tracing Available", type: "bool", defaultValue: "false", description: "Hardware ray tracing is available with the current RHI." },
+    { name: "Running On Battery", type: "bool", defaultValue: "false" },
+    { name: "Current RHI", type: "EGraphicsRHI", defaultValue: "Unknown" },
+    { name: "Current Feature Level", type: "EShaderFormat", defaultValue: "Invalid" },
+  ]}
+/>
+
+### Auto Configure
+
+<UEVersion tone="since">Subsystem</UEVersion>
+
+Picks settings for this machine: engine benchmark (optional), caps texture quality and the texture pool by video memory, TSR with an internal resolution matching the level, lowers a preferred SM6 to SM5 on GPUs without SM6 and enables background throttling on battery. Applied and saved.
+
+<UFunction
+  name="Auto Configure"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Target", type: "object", typeName: "Engine User Settings Subsystem" }, { name: "Run Benchmark", type: "bool", defaultValue: true }]}
+  outputs={[{ name: "Return Value", type: "struct", typeName: "FEUSAutoConfigResult" }]}
+/>
+
+<UStruct
+  name="FEUSAutoConfigResult"
+  fields={[
+    { name: "Overall Level", type: "int", defaultValue: "0", description: "Overall scalability level chosen (0 = Low .. 3 = Epic)." },
+    { name: "Screen Percentage", type: "float", defaultValue: "100.0" },
+    { name: "Texture Pool MB", type: "int", defaultValue: "0" },
+    { name: "Lowered To SM5", type: "bool", defaultValue: "false", description: "The preferred feature level was SM6 on a GPU without SM6 and was lowered to SM5 (applies after restart)." },
+    { name: "Summary", type: "string", description: "Human readable summary of what was changed." },
+  ]}
+/>

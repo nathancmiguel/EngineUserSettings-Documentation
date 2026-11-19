@@ -1,6 +1,6 @@
 ---
 title: Finding nodes
-description: How to find the Engine User Settings nodes in the Blueprint editor.
+description: How to find the Engine User Settings nodes in the Blueprint editor, and the difference between static and subsystem nodes.
 ---
 
 <Steps>
@@ -8,20 +8,37 @@ description: How to find the Engine User Settings nodes in the Blueprint editor.
     Right-click anywhere in a Blueprint graph to open the action menu.
   </Step>
   <Step>
-    Type the name of the node, or scroll down to the **EngineUserSettings** category. Every node on this site has a copy button (top-right corner of the graph) that copies its name so you can paste it straight into the search box.
+    Type the name of the node, or browse the **EngineUserSettings** category (Rendering, Upscaling, Shadows, Lumen, Post Processing…). Every node on this site has a copy button (top-right corner of the graph) that copies its name so you can paste it into the search box.
   </Step>
   <Step>
     <ImageZoom src="/img/searchbox.png" alt="Blueprint action menu showing the EngineUserSettings category" width={340} height={339} />
   </Step>
 </Steps>
 
-## Reading the node diagrams
+## Static nodes and subsystem nodes
+
+Every node lives in **`EngineUserSettingsSubsystem`**, a Game Instance Subsystem. There are two kinds:
+
+| Kind | How to call it | Examples |
+| ---- | -------------- | -------- |
+| **Static** | Call it directly, no reference needed. Works in menus and Editor Utility Widgets. | Rendering, shadows, Lumen, post processing, LOD, RHI, presets |
+| **Subsystem** <UEVersion tone="since">Subsystem</UEVersion> | Needs the subsystem as **Target**: use **Get Game Instance Subsystem** with the class `EngineUserSettingsSubsystem`. | Upscaling, dynamic resolution, textures / VRAM, background, PSO progress, hardware info, Auto Configure |
 
 <UFunction
-  name="Example Function"
-  target="Engine User Settings"
-  inputs={[{ name: "Controller", type: "object" }, { name: "Quality", type: "int", defaultValue: 3 }]}
+  name="Get Game Instance Subsystem"
+  pure
+  inputs={[{ name: "Class", type: "class", typeName: "Game Instance Subsystem Class", defaultValue: "EngineUserSettingsSubsystem" }]}
+  outputs={[{ name: "Return Value", type: "object", typeName: "Engine User Settings Subsystem" }]}
 />
+
+## How settings are saved
+
+- Settings are **applied immediately** (except RHI and feature level, which need a restart).
+- They're **saved in `GameUserSettings.ini`** and **reapplied when the game starts**: console variables in `[/Script/Engine.RendererSettings]`, the plugin's own settings in `[/Script/EngineUserSettings.EngineUserSettingsConfig]`.
+- Every value is **clamped to a safe range**, so a hand-edited ini file can't break the game.
+- **Getters return the value in effect**, so a settings menu can read its initial state from them.
+
+## Reading the node diagrams
 
 | Header color | Meaning |
 | ------------ | ------- |
@@ -29,4 +46,4 @@ description: How to find the Engine User Settings nodes in the Blueprint editor.
 | Green | Pure function – no execution pins, evaluated when its output is read. |
 | Red | Event – fires when something happens. |
 
-Pin colors follow Unreal's defaults: <span className="font-semibold" style={{color:"#a30000"}}>Boolean</span>, <span className="font-semibold" style={{color:"#00786a"}}>Byte / Enum</span>, <span className="font-semibold" style={{color:"#1fe3ad"}}>Integer</span>, <span className="font-semibold" style={{color:"#ff00d4"}}>String</span>, <span className="font-semibold" style={{color:"#00a8f4"}}>Object</span> and <span className="font-semibold" style={{color:"#ff3a3a"}}>Delegate</span>.
+Pin colors follow Unreal's defaults: <span className="font-semibold" style={{color:"#a30000"}}>Boolean</span>, <span className="font-semibold" style={{color:"#00786a"}}>Byte / Enum</span>, <span className="font-semibold" style={{color:"#1fe3ad"}}>Integer</span>, <span className="font-semibold" style={{color:"#9dff4a"}}>Float</span>, <span className="font-semibold" style={{color:"#ff00d4"}}>String</span>, <span className="font-semibold" style={{color:"#0058c9"}}>Struct</span>, <span className="font-semibold" style={{color:"#00a8f4"}}>Object</span> and <span className="font-semibold" style={{color:"#ff3a3a"}}>Delegate</span>.

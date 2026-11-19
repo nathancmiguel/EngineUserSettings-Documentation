@@ -1,0 +1,58 @@
+---
+title: Upgrading to v1.4
+description: Migrate Blueprints from Engine User Settings v1.1 to the Engine User Settings Subsystem introduced in v1.4.
+---
+
+In v1.4.0 every node moved to **`EngineUserSettingsSubsystem`**. The C++ library `EngineUserSettingsBPLibrary` and the `EngineUserSettings` Blueprint function library asset were removed.
+
+<Steps>
+  <Step>
+    ### Back up your project
+
+    Commit or copy your project before updating the plugin.
+  </Step>
+  <Step>
+    ### C++ library nodes are redirected automatically
+
+    Nodes from the old C++ library (RHI, feature level, materials, INI…) are migrated by the `CoreRedirects` in `Config/DefaultEngineUserSettings.ini`. Open every Blueprint that uses them and **save it once**.
+  </Step>
+  <Step>
+    ### Replace the Blueprint function library nodes
+
+    Nodes from the old `EngineUserSettings` Blueprint function library asset (render settings) **can't be redirected**. Blueprints that used them show errors after the update: replace each node using the table below.
+  </Step>
+</Steps>
+
+<Callout type="info">The new rendering nodes don't take a **Controller** pin any more: they set console variables directly, so they also work in menus and Editor Utility Widgets.</Callout>
+
+## Node migration table
+
+| Before (v1.1) | Now (v1.4) | Notes |
+| ------------- | ----------- | ----- |
+| Set / Get Global Illumination Method | [Set / Get Global Illumination](/docs/Nodes/render#set-global-illumination) | New enum `EEUSGlobalIllumination` |
+| Set / Get SSGIQuality | [Set / Get Screen Space GIQuality](/docs/Nodes/render#set-screen-space-giquality) | 1–4 |
+| Set Allow Megalights / Get Allow Megalighs | [Set Mega Lights Enabled / Is Mega Lights Enabled](/docs/Nodes/render#set-mega-lights-enabled) | Saved value now restored correctly |
+| Set / Get Reflection Method | [Set / Get Reflections](/docs/Nodes/render#set-reflections) | New enum `EEUSReflections` |
+| Set / Get SSRQuality | [Set / Get Screen Space Reflection Quality](/docs/Nodes/render#set-screen-space-reflection-quality) | 0–4 |
+| Set / Get Shadow Method | [Set / Get Shadow Method](/docs/Nodes/render#set-shadow-method) | New enum `EEUSShadowMethod` |
+| Set / Get Antialiasing Method | [Set / Get Upscaler](/docs/Nodes/upscaling#set-upscaler) | **Subsystem** node |
+| Set / Get MSAAQuality | [Set / Get MSAASample Count](/docs/Nodes/render#set-msaasample-count) | New enum `EEUSMSAASamples` |
+| Set / Get Ambient Occlusion | [Set / Get Ambient Occlusion Quality](/docs/Nodes/render#set-ambient-occlusion-quality) | Bool → quality 0–3 |
+| Set / Get Bloom Quality, Motion Blur Quality, Lens Flare Quality | [Same names](/docs/Nodes/render#set-bloom-quality) | `0` turns the effect off |
+| Set / Get Use Nanite | [Set Nanite Enabled / Is Nanite Enabled](/docs/Nodes/render#set-nanite-enabled) | |
+| Set / Get Mobile Antialiasing Method | [Set / Get Mobile Anti Aliasing](/docs/Nodes/render#set-mobile-anti-aliasing) | Adds TSR and SMAA |
+| Get Max Feature Level | [Get Max Supported Feature Level](/docs/Nodes/shader-model#get-max-supported-feature-level) | Redirected |
+| Get Materials / Get Niagara Materials | [Get All Materials / Get All Niagara Systems](/docs/Nodes/shader-compiler#get-all-materials) | Redirected |
+| Is Shader Compiling | [Are Shaders Compiling](/docs/Nodes/shader-compiler#are-shaders-compiling) | Redirected; now also reports PSOs in packaged games |
+| Set Game User Settings Ini Value | [Set User Settings Ini Value](/docs/Nodes/utilities#set-user-settings-ini-value) | Redirected |
+
+## Behavior changes
+
+- **Get Current RHI / Get Preferred RHI** return **Unknown / Default** instead of Vulkan when nothing is saved or the RHI isn't recognized.
+- **Set Preferred Feature Level** returns a `bool`: it saves SM5 and returns `false` when the GPU can't run SM6.
+- **Every value is clamped** to a safe range when it's set and when it's reapplied at startup, including values edited by hand in `GameUserSettings.ini`.
+- **Saved values from v1.1 keep working**: the plugin still uses `[/Script/Engine.RendererSettings]` for console variables.
+
+## Example project
+
+The plugin now includes an example map, `Content/Example/Maps/Example`, with an **Options** settings menu built entirely with these nodes. Open it to see a complete graphics menu.

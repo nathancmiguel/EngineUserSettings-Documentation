@@ -234,6 +234,81 @@ export function UVariables({
 }
 
 /* -------------------------------------------------------------------------- */
+/*                                   UStruct                                  */
+/* -------------------------------------------------------------------------- */
+
+export interface UStructProps {
+	name: string;
+	description?: ReactNode;
+	fields: {
+		name: string;
+		type: string;
+		defaultValue?: string;
+		range?: string;
+		description?: ReactNode;
+	}[];
+}
+
+export function UStruct({ name, description, fields }: UStructProps) {
+	const showDefault = fields.some((field) => field.defaultValue !== undefined);
+	const showRange = fields.some((field) => field.range !== undefined);
+
+	return (
+		<div className="not-prose my-4 overflow-hidden rounded-xl border">
+			<div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2 text-sm">
+				<PinIcon
+					pin={{ type: "struct" }}
+					className="drop-shadow-[0_0_1px_rgba(0,0,0,0.9)]"
+				/>
+				<code className="font-semibold">{name}</code>
+				<Badge variant="outline" className="ml-auto">
+					Struct
+				</Badge>
+			</div>
+			{description && (
+				<p className="border-b px-4 py-2 text-sm text-muted-foreground">
+					{description}
+				</p>
+			)}
+			<Table>
+				<TableHeader>
+					<TableRow>
+						<TableHead className="w-1/4">Field</TableHead>
+						<TableHead className="w-24">Type</TableHead>
+						{showDefault && <TableHead className="w-20">Default</TableHead>}
+						{showRange && <TableHead className="w-24">Range</TableHead>}
+						<TableHead>Description</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{fields.map((field) => (
+						<TableRow key={field.name}>
+							<TableCell className="font-medium">{field.name}</TableCell>
+							<TableCell>
+								<code className="text-xs">{field.type}</code>
+							</TableCell>
+							{showDefault && (
+								<TableCell>
+									<code className="text-xs">{field.defaultValue ?? "—"}</code>
+								</TableCell>
+							)}
+							{showRange && (
+								<TableCell>
+									<code className="text-xs">{field.range ?? "—"}</code>
+								</TableCell>
+							)}
+							<TableCell className="whitespace-normal text-muted-foreground">
+								{field.description ?? "—"}
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+		</div>
+	);
+}
+
+/* -------------------------------------------------------------------------- */
 /*                                    UEnum                                   */
 /* -------------------------------------------------------------------------- */
 

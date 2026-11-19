@@ -1,12 +1,12 @@
 ---
 title: Welcome
-description: Engine User Settings is an Unreal Engine plugin that exposes RHI, shader model, rendering and post-processing settings to Blueprints so players can change them in game.
+description: Engine User Settings is an Unreal Engine plugin that exposes graphics API, shader model, upscaling, Lumen, shadows, post-processing, LOD and latency settings to Blueprints so players can change them in game.
 ---
 
-**Engine User Settings** is an Unreal Engine plugin that lets players customize engine features at runtime. You can switch the graphics API, the shader model / feature level, global illumination, reflections, shadows, anti-aliasing, Nanite, MegaLights and other post-process effects, and pre-compile shaders in game to remove hitches. Everything is exposed as Blueprint nodes and saved to `GameUserSettings.ini`, so the player's choices are restored on the next launch.
+**Engine User Settings** is an Unreal Engine plugin that lets players customize engine features at runtime. Switch the graphics API and shader model, pick an upscaler (TSR, DLSS, FSR, XeSS…), tune Lumen, shadows, post-processing, LODs and latency, apply presets or let **Auto Configure** pick settings for the player's machine. Everything is exposed as Blueprint nodes, clamped to safe ranges and saved to `GameUserSettings.ini`, so the player's choices are restored on the next launch.
 
-<Callout title="Latest release: v1.1.4 (Unreal Engine 5.8)">
-  Settings are now restored with the console variable system instead of console commands, the preferred feature level is read correctly again and *Performance Mode* can be selected on DirectX 12. See the [changelog](/docs/changelog).
+<Callout title="Latest release: v1.4.0 (Unreal Engine 5.8)">
+  Every node now lives in the **Engine User Settings Subsystem**, with upscaling, dynamic resolution, shadows, Lumen, post-processing, LOD, Reflex, presets, profiles and Auto Configure. Coming from v1.1? Read the [upgrade guide](/docs/upgrading) first. See the [changelog](/docs/changelog).
 </Callout>
 
 ## Supported Unreal versions
@@ -19,11 +19,18 @@ description: Engine User Settings is an Unreal Engine plugin that exposes RHI, s
 
 | Area | Nodes |
 | ---- | ----- |
-| [Graphics API](/docs/Nodes/rhi) | DirectX 11, DirectX 12, Vulkan |
-| [Shader model](/docs/Nodes/shader-model) | SM6, SM5, Performance Mode (ES 3.1) |
-| [Rendering](/docs/Nodes/render) | GI method, reflections, shadows, anti-aliasing, MSAA, AO, bloom, lens flares, motion blur, Nanite, MegaLights |
-| [Shader compiler](/docs/Nodes/shader-compiler) | In-game material and Niagara shader pre-compilation |
-| [Utilities](/docs/Nodes/utilities) | Write any value to `GameUserSettings.ini`, list materials and Niagara systems |
+| [Rendering](/docs/Nodes/render) | Global illumination, reflections, shadow method, MSAA, AO, bloom, motion blur, lens flares, Nanite, MegaLights, mobile AA |
+| [Upscaling & resolution](/docs/Nodes/upscaling) | TSR, TAA, FXAA, MSAA, DLSS, FSR, XeSS, internal resolution, dynamic resolution |
+| [Shadows](/docs/Nodes/shadows) | Resolution, distance, cascades, contact shadows, Virtual Shadow Maps |
+| [Lumen & ray tracing](/docs/Nodes/lumen) | Lumen GI and reflection quality, hardware ray tracing |
+| [Post processing](/docs/Nodes/post-processing) | Depth of field, film grain, vignette, light shafts, volumetric fog and clouds… |
+| [Effects & LOD](/docs/Nodes/effects-lod) | Niagara quality, view distance, mesh and landscape LODs, foliage density |
+| [Textures & VRAM](/docs/Nodes/textures) | Anisotropic filtering, texture pool, mip bias |
+| [CPU, latency & background](/docs/Nodes/performance) | Animation, physics, low latency, NVIDIA Reflex, background throttling |
+| [Presets & profiles](/docs/Nodes/presets) | Performance → Ultra presets, named profiles, reset to defaults |
+| [Hardware & Auto Configure](/docs/Nodes/hardware) | GPU / CPU / VRAM info and automatic settings |
+| [Graphics API](/docs/Nodes/rhi) · [Shader model](/docs/Nodes/shader-model) | DirectX 11 / 12, Vulkan · SM6, SM5, Performance Mode |
+| [Shader compiler](/docs/Nodes/shader-compiler) | Material, Niagara and PSO pre-compilation |
 
 ## Links
 

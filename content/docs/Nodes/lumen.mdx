@@ -1,0 +1,105 @@
+---
+title: Lumen & Ray Tracing
+description: Lumen global illumination and reflection quality, hardware ray tracing and ray tracing support.
+---
+
+<UEVersion>UE5 only</UEVersion>
+
+Static nodes, applied immediately, saved and reapplied at startup. Lumen is selected with [Set Global Illumination](/docs/Nodes/render#set-global-illumination) and [Set Reflections](/docs/Nodes/render#set-reflections); the nodes below tune it.
+
+<Callout type="warn">Hardware ray tracing needs a ray tracing capable GPU and **Support Hardware Ray Tracing** enabled in the project settings. Check [Is Ray Tracing Supported](#is-ray-tracing-supported) before showing the option.</Callout>
+
+### Set Lumen Hardware Ray Tracing
+
+Lumen uses hardware ray tracing (needs a ray tracing GPU and "Support Hardware Ray Tracing" in the project).
+
+<UFunction
+  name="Set Lumen Hardware Ray Tracing"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Lumen Hardware Ray Tracing
+
+Returns the value in effect. See [Set Lumen Hardware Ray Tracing](#set-lumen-hardware-ray-tracing).
+
+<UFunction
+  name="Is Lumen Hardware Ray Tracing"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Set Lumen GIQuality
+
+Lumen global illumination detail, 1 (low: big probes, no mesh distance fields) .. 3 (cinematic).
+
+<UFunction
+  name="Set Lumen GIQuality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Lumen GIQuality
+
+Returns the value in effect. See [Set Lumen GIQuality](#set-lumen-giquality).
+
+<UFunction
+  name="Get Lumen GIQuality"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Set Lumen Reflection Quality
+
+Lumen reflections, 0 (off: falls back to screen space / captures), 1 (half resolution) .. 2 (full resolution).
+
+<UFunction
+  name="Set Lumen Reflection Quality"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Quality", type: "int", defaultValue: 0 }]}
+/>
+
+### Get Lumen Reflection Quality
+
+Returns the value in effect. See [Set Lumen Reflection Quality](#set-lumen-reflection-quality).
+
+<UFunction
+  name="Get Lumen Reflection Quality"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "int" }]}
+/>
+
+### Is Ray Tracing Supported
+
+Hardware ray tracing on this machine (GPU and RHI support it, and the project enabled it).
+
+<UFunction
+  name="Is Ray Tracing Supported"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
+
+### Set Ray Tracing Enabled
+
+Ray tracing at runtime. Applies immediately only with `r.RayTracing.EnableOnDemand`, otherwise at next start.
+
+<UFunction
+  name="Set Ray Tracing Enabled"
+  target="Engine User Settings Subsystem"
+  inputs={[{ name: "Enabled", type: "bool", defaultValue: false }]}
+/>
+
+### Is Ray Tracing Enabled
+
+Returns the value in effect. See [Set Ray Tracing Enabled](#set-ray-tracing-enabled).
+
+<UFunction
+  name="Is Ray Tracing Enabled"
+  target="Engine User Settings Subsystem"
+  pure
+  outputs={[{ name: "Return Value", type: "bool" }]}
+/>
